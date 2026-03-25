@@ -1,0 +1,5 @@
+export * from './answerPopUp/AnswerPopUp.tsx'
+export * from './recordPopUp/RecordPopUp.tsx'
+export * from './resultPopUp/ResultPopUp.tsx'
+export * from './timePopUp/TimePopUp.tsx'
+export * from './tutorialPopUp/TutorialPopUp.tsx'
