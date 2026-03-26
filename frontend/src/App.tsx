@@ -10,11 +10,10 @@ import { PopUpType } from './models/index.ts';
 
 function App() {
   // useEffect(() => {
-  //   // 페이지가 처음 켜질 때 딱 한 번만 전송!
   //   ApiService.getInstance().saveRecord({ test: "hello" })
   //     .then(res => console.log("서버 응답:", res))
   //     .catch(err => console.error("연결 에러:", err));
-  // }, []); // 뒤에 빈 배열 [] 이 중요해요!
+  // }, []);
 
   // useEffect(() => {
   //   localStorage.setItem('키', '값')
