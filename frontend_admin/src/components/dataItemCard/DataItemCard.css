@@ -1,0 +1,53 @@
+/* DataItemCard.css */
+.data-item-card {
+  position: relative;
+  background: white;
+  border-radius: 25px; /* 곡률을 더 크게 */
+  padding: 40px;       /* 내부 여백 넉넉히 */
+  width: 100%;         /* 그리드 칸에 맞게 꽉 채움 */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.item-number {
+  position: absolute;
+  top: 25px;
+  left: 30px;
+  font-size: 1.2rem;
+  color: #bbb;
+}
+
+.item-pose-name {
+  margin-bottom: 30px;
+  font-size: 2rem; /* 제목을 크게 */
+  font-weight: 800;
+}
+
+.item-image-group {
+  display: flex;
+  gap: 30px; /* 이미지 사이 간격 */
+  width: 100%;
+  justify-content: center;
+}
+
+/* 이미지 버튼 크기를 시원하게 키움 */
+.data-item-card .custom-btn.square {
+  width: 320px;  /* 기존보다 훨씬 크게 */
+  height: 320px;
+  border-radius: 20px;
+}
+
+/* 카드가 부모 너비를 절대 넘지 못하도록 강제 */
+.data-page-container * {
+  box-sizing: border-box;
+}
+
+/* DataItemCard 내부의 이미지가 찌그러지지 않고 너비에 맞춰 줄어들게 */
+.DataItemCard {
+  width: 100% !important;
+  max-width: 500px; /* 너무 커지는 건 방지 */
+  min-width: 0;    /* flex 안에서 카드가 찌그러질 수 있게 허용 */
+}

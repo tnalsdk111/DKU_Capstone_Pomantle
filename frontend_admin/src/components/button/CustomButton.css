@@ -1,0 +1,42 @@
+/* 기본 공통 스타일 */
+.custom-btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.custom-btn:disabled {
+  background-color: #ccc !important;
+  cursor: not-allowed;
+}
+
+/* 크기 변형 */
+.small { padding: 5px 10px; font-size: 12px; }
+.medium { padding: 10px 20px; font-size: 16px; }
+.large { padding: 15px 30px; font-size: 20px; width: 100%; }
+
+/* 색상(Variant) 변형 */
+.primary { background-color: #007bff; color: white; }
+.primary:hover { background-color: #0056b3; }
+
+.danger { background-color: #dc3545; color: white; }
+.danger:hover { background-color: #a71d2a; }
+
+.success { background-color: #28a745; color: white; }
+
+.square {width: 280px;         /* 적당한 정사각형 크기 */
+  height: 280px;
+  padding: 0;           /* 이미지 버튼은 패딩이 없어야 꽉 찹니다 */
+  overflow: hidden;     /* 이미지가 삐져나오지 않게 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* 비율 유지하며 꽉 채우기 */
+}

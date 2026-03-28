@@ -1,0 +1,67 @@
+/* 화면 전체를 어둡게 덮는 배경 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 달력보다 높은 숫자 */
+}
+
+/* 실제 팝업 박스 */
+.modal-content {
+  background: white;
+  padding: 40px;            /* 안쪽 여백을 조금 더 늘려주면 고급스러워요 */
+  border-radius: 25px;      /* 크기가 커지면 라운드도 조금 더 주는 게 예쁩니다 */
+  
+  /* [수정] 너비를 시원하게 키워주세요 */
+  width: 800px;             
+  max-width: 90%;           /* 모바일이나 작은 화면에서도 안 삐져나가게 방어 */
+  
+  /* 높이는 내용물에 따라 자동으로 늘어나게 두는 것이 좋습니다 */
+  min-height: 400px;        
+  
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  animation: modal-show 0.3s;
+}
+
+@keyframes modal-show {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 15px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px 0; /* 위아래 여백 살짝 */
+}
+
+/* 새로 추가하는 스타일: 버튼을 좌우로 배치 */
+.modal-button-group {
+  display: flex;
+  justify-content: center; /* 중앙으로 모으기 */
+  gap: 30px;              /* 버튼 사이 간격 넉넉히 */
+  padding-top: 10px;
+}
+
+/* 바구니 안의 버튼들이 공평하게 너비를 나눠 가지도록 설정 */
+.modal-button-group .custom-btn {
+  flex: 1; /* 1:1 비율로 너비 차지 */
+}
