@@ -39,7 +39,7 @@ export const InitHolistic = (
 
     // holistic 가져오기
     const holistic = new Holistic({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`,
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1675471629/${file}`,
     });
 
     // holistic 옵션 설정
