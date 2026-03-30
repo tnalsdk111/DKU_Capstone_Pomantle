@@ -1,3 +1,3 @@
-export * from './GameRecord.ts';
-export * from './PopUp.ts';
-export * from './PopUpType.ts';
+export * from './GameRecord';
+export * from './PopUp';
+export * from './PopUpType';

@@ -1,5 +1,5 @@
-import {PopUp} from '../models/PopUp.ts'
-import { PopUpType } from '../models/PopUpType.ts'
+import {PopUp} from '../models/PopUp'
+import { PopUpType } from '../models/PopUpType'
 
 export class PopUpManager{
     private static instance: PopUpManager
