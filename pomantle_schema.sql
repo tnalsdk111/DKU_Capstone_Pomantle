@@ -12,13 +12,3 @@ CREATE TABLE daily_poses (
     target_date DATE UNIQUE NOT NULL,
     pose_id BIGINT REFERENCES poses(pose_id) ON DELETE CASCADE
 );
-
---게임 시도 기록 테이블
-CREATE TABLE game_attempts (
-    attempt_id BIGSERIAL PRIMARY KEY,
-    session_id VARCHAR(100) NOT NULL,
-    daily_id BIGINT REFERENCES daily_poses(daily_id) ON DELETE CASCADE,
-    attempt_number INT NOT NULL,
-    similarity_score NUMERIC(5, 2) NOT NULL,
-    play_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
