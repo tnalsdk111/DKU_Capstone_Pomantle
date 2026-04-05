@@ -1,22 +1,14 @@
 import React from 'react';
-import DataItemCard from '../../components/dataItemCard/DataItemCard';
+import DataView from '../../components/dataView/DataView';
 import { FixedSizeList as List } from 'react-window';
 import './DataPage.css';
 import { useEffect, useState } from 'react';
+import { DBManager } from '../../managers/DBManager';
 
-const dummyData = [ // 샘플링용 데이터
-  { id: 1, poseName: "스쿼트", originalImage: "...", publicImage: "..." },
-  { id: 2, poseName: "런지", originalImage: "...", publicImage: "..." },
-  { id: 3, poseName: "플랭크", originalImage: "...", publicImage: "..." },
-  { id: 3, poseName: "플랭크", originalImage: "...", publicImage: "..." },
-  { id: 3, poseName: "플랭크", originalImage: "...", publicImage: "..." },
-  { id: 3, poseName: "플랭크", originalImage: "...", publicImage: "..." },
-];
-
-interface RowProps{
-  index: number;
-  style: React.CSSProperties;
-}
+// interface RowProps{
+//   index: number;
+//   style: React.CSSProperties;
+// }
 
 // const Row = ({ index, style, data }: any) => {
 //   const { isMobile, items } = data;
@@ -74,11 +66,13 @@ function DataPage() {
   //   </div>
   // );
 
+  const dummyData = DBManager.getInstance().getAllData();
+
   return (
     <div className="data-page-container">
       <div className="data-grid">
         {dummyData.map((item) => (
-          <DataItemCard key={item.id} item={item} />
+          <DataView key={item.id} item={item} />
         ))}
       </div>
     </div>

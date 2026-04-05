@@ -19,12 +19,15 @@ export class PopUpManager{
     }
 
     public pushPopUp(popUp: PopUp): void{
+        console.log("asdf");
         this.popUpMap.set(popUp.currentPopUpType, popUp);
     }
 
-    public openPopUp(popUpType: PopUpType): void{
+    public openPopUp(popUpType: PopUpType, data?: any): void{
         const popUp = this.popUpMap.get(popUpType);
+        //console.log(data);
         if(popUp) {
+            if(data) (popUp as any).showData(data.date);
             popUp.open();
         }
         else{

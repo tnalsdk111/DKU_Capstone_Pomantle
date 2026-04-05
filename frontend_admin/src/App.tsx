@@ -1,12 +1,16 @@
 import React, {useState} from 'react';
 import './App.css';
 import CalenderPage from './pages/calendarPage/CalendarPage';
+import { CreateDataPopUp } from './components/popup/createDataPopUp/CreateDataPopUp';
 import DataPage from './pages/dataPage/DataPage';
 import CustomButton from './components/button/CustomButton';
 import { PopUpManager } from './managers/PopUpManager';
+import { DBManager } from './managers/DBManager';
+import { CalendarDataPopUp } from './components/popup/calendatDataPopUp/CalendarDataPopUp';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<'calendar' | 'data'>('calendar');
+  const dbManager = DBManager.getInstance();
   const popUpManager = PopUpManager.getInstance();
 
   return (
@@ -20,6 +24,11 @@ function App() {
 
       <div>
         {currentPage == 'calendar' ? <CalenderPage /> : <DataPage/>}
+      </div>
+
+      <div>
+        <CalendarDataPopUp/>
+        <CreateDataPopUp/>
       </div>
     </div>
   );
