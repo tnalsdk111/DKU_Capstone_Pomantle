@@ -1,0 +1,33 @@
+오늘자 포즈 조회
+URL: `GET http://(서버주소):5000/api/v1/daily-pose`
+
+응답 성공 예시
+{
+  "status": "success",
+  "data": {
+    "daily_id": 1,
+    "pose_id": 1,
+    "pose_name": "나무자세"
+  }
+}
+
+
+포즈 유사도 평가
+URL: `POST http://(서버주소):5000/api/v1/evaluate`
+
+요청
+{
+  "daily_id": 1,
+  "landmarks": [ {"x": 0.1, "y": 0.2, "z": 0.3}, ... (21개 좌표) ]
+}
+
+
+응답 성공 예시
+json
+{
+  "status": "success",
+  "data": {
+    "score": 95.5,
+    "is_passed": true
+  }
+}
