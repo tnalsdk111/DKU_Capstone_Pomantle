@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { PopUp } from '../../../models/PopUp.ts';
-import { PopUpType } from '../../../models/PopUpType.ts';
-import { GameRecord } from '../../../models/GameRecord.ts';
-import { PopUpManager } from '../../../managers/PopUpManager.tsx';
+import { PopUp } from '../../../models/PopUp';
+import { PopUpType } from '../../../models/PopUpType';
+import { GameRecord } from '../../../models/GameRecord';
+import { PopUpManager } from '../../../managers/PopUpManager';
 
 interface IResultPopUp extends PopUp{
     showRecords(record: GameRecord): void;

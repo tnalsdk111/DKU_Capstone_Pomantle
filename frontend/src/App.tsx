@@ -1,37 +1,24 @@
-import { useEffect } from 'react'; 
-import ApiService from './api/ApiService.tsx'
-// import { ResultPopUp } from './components/popups/ResultPopUp/ResultPopUp.tsx';
-// import { PopUpManager } from './managers/PopUpManager.tsx';
-// import { PopUpType } from './models';
+import React, { useState, useRef, useEffect } from "react";
+import MainPage from "./pages/mainPage/MainPage";
+import GamePage from "./pages/gamePage/GamePage";
+import LoadManager from "./pages/LoadManager/LoadManager";
 
-import { ResultPopUp } from './components/popups/index.tsx';
-import { PopUpManager } from './managers/index.tsx';
-import { PopUpType } from './models/index.ts';
+
+
+type Page = "MAIN" | "LOADING" | "GAME";
 
 function App() {
-  // useEffect(() => {
-  //   ApiService.getInstance().saveRecord({ test: "hello" })
-  //     .then(res => console.log("서버 응답:", res))
-  //     .catch(err => console.error("연결 에러:", err));
-  // }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem('키', '값')
-  // }, [])
-
-  useEffect(()=>{
-    const popUpManager = PopUpManager.getInstance();
-    
-    setTimeout(() => {
-      popUpManager.openPopUp(PopUpType.RESULT);
-    }, 2000)
-  }, []);
+  const [page, setPage] = useState<Page>("MAIN");
+  const [holistic, setHolistic] = useState<any>(null);
 
   return (
-    <div className="App">
-      <h1>My Game Project</h1>
-      <ResultPopUp />
-    </div>
+    <>
+      {page === "MAIN" && <MainPage onStart={() => setPage("LOADING")} />}
+      {page === "LOADING" && (
+        <LoadManager onSuccess={() => setPage("GAME")}/>
+      )}
+      {page === "GAME" && <GamePage />}
+    </>
   );
 }
 
