@@ -1,7 +1,7 @@
 import { RefObject } from "react";
 import { Holistic, Results } from "@mediapipe/holistic";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { FACEMESH_TESSELATION, HAND_CONNECTIONS, FACEMESH_LIPS } from "@mediapipe/holistic";
+import { HAND_CONNECTIONS, FACEMESH_LIPS } from "@mediapipe/holistic";
 
 const poseConnections = [
     // 2. 상체 (어깨, 팔, 손)
@@ -32,11 +32,7 @@ const lineWidth = 2;
 
 export const InitHolistic = (
     onResultsCallback: (results: Results) => void
-    ) => { // 이걸 통해서 Holistic을 초기화 해 반환
-    // setUpHolistic
-    // onResultsCallback은 함수임. Holistic이 사용할 함수
-    // App.js에서 handleMediaPipeResults이고 handleMediaPipeResults는 이 js의 drawHolisticResults이다.
-
+    ) => { 
     // holistic 가져오기
     const holistic = new Holistic({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1675471629/${file}`,
