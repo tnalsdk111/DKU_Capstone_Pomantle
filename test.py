@@ -1,34 +1,53 @@
 import requests
-import random
 
-# 가짜 21개 좌표 생성기 (테스트용)
-def generate_fake_landmarks(noise=0.0):
-    landmarks = []
-    for i in range(21):
-        landmarks.append({
-            "x": (i * 0.05) + random.uniform(-noise, noise),
-            "y": (i * 0.05) + random.uniform(-noise, noise),
-            "z": (i * 0.01) + random.uniform(-noise, noise)
-        })
-    return landmarks
+#정답 포즈 저장 테스트
+print("--- 1. 포즈 저장 테스트 ---")
+save_url = "http://127.0.0.1:5000/api/poses"
+save_data = {
+    "pose_name": "테스트 포즈",
+    "target_vector": [
+        {"x": 0.1, "y": 0.1, "z": 0.1}, {"x": 0.2, "y": 0.2, "z": 0.2}, 
+        {"x": 0.3, "y": 0.3, "z": 0.3}, {"x": 0.4, "y": 0.4, "z": 0.4}, 
+        {"x": 0.5, "y": 0.5, "z": 0.5}, {"x": 0.6, "y": 0.6, "z": 0.6}, 
+        {"x": 0.7, "y": 0.7, "z": 0.7}, {"x": 0.8, "y": 0.8, "z": 0.8}, 
+        {"x": 0.9, "y": 0.9, "z": 0.9}, {"x": 0.1, "y": 0.2, "z": 0.3}, 
+        {"x": 0.2, "y": 0.3, "z": 0.4}, {"x": 0.3, "y": 0.4, "z": 0.5}, 
+        {"x": 0.4, "y": 0.5, "z": 0.6}, {"x": 0.5, "y": 0.6, "z": 0.7}, 
+        {"x": 0.6, "y": 0.7, "z": 0.8}, {"x": 0.7, "y": 0.8, "z": 0.9}, 
+        {"x": 0.8, "y": 0.9, "z": 0.1}, {"x": 0.9, "y": 0.1, "z": 0.2}, 
+        {"x": 0.1, "y": 0.3, "z": 0.5}, {"x": 0.2, "y": 0.4, "z": 0.6}, 
+        {"x": 0.3, "y": 0.5, "z": 0.7}
+    ]
+}
 
-base_url = "http://127.0.0.1:5000"
+response1 = requests.post(save_url, json=save_data)
+print("상태 코드:", response1.status_code)
+print("응답 내용:", response1.json())
+print("\n")
 
-# DB에 정답 포즈 저장
-perfect_pose = generate_fake_landmarks()
-post_resp = requests.post(f"{base_url}/api/poses", json={
-    "pose_name": "테스트 가위바위보",
-    "target_vector": perfect_pose
-})
-pose_id = post_resp.json()['pose_id']
-print(f"[저장 완료] DB 포즈 ID: {pose_id}")
+# 여기서 방금 저장된 포즈의 ID를 가져옵니다.
+saved_pose_id = response1.json().get("pose_id", 1)
 
-# 조금 틀린 유저의 포즈 쏴서 평가받기
-player_pose = generate_fake_landmarks(noise=0.02) # noise를 주어 정답과 아주 조금 다르게 만듦
-eval_resp = requests.post(f"{base_url}/api/evaluate", json={
-    "pose_id": pose_id,
-    "landmarks": player_pose
-})
+#유사도 측정 테스트
+print("--- 2. 유사도 측정 테스트 ---")
+evaluate_url = "http://127.0.0.1:5000/api/evaluate"
+evaluate_data = {
+    "pose_id": saved_pose_id, 
+    "landmarks": [
+        {"x": 0.12, "y": 0.11, "z": 0.2}, {"x": 0.22, "y": 0.21, "z": 0.2}, 
+        {"x": 0.32, "y": 0.31, "z": 0.4}, {"x": 0.42, "y": 0.41, "z": 0.4}, 
+        {"x": 0.52, "y": 0.51, "z": 0.6}, {"x": 0.62, "y": 0.61, "z": 0.6}, 
+        {"x": 0.72, "y": 0.71, "z": 0.7}, {"x": 0.82, "y": 0.81, "z": 0.8}, 
+        {"x": 0.92, "y": 0.91, "z": 0.8}, {"x": 0.12, "y": 0.21, "z": 0.3}, 
+        {"x": 0.22, "y": 0.31, "z": 0.5}, {"x": 0.32, "y": 0.41, "z": 0.5}, 
+        {"x": 0.42, "y": 0.51, "z": 0.6}, {"x": 0.52, "y": 0.61, "z": 0.7}, 
+        {"x": 0.62, "y": 0.71, "z": 0.7}, {"x": 0.72, "y": 0.81, "z": 0.9}, 
+        {"x": 0.82, "y": 0.91, "z": 0.2}, {"x": 0.92, "y": 0.11, "z": 0.2}, 
+        {"x": 0.12, "y": 0.31, "z": 0.4}, {"x": 0.22, "y": 0.41, "z": 0.6}, 
+        {"x": 0.32, "y": 0.51, "z": 0.6}
+    ]
+}
 
-print("[평가 결과]")
-print(eval_resp.json())
+response2 = requests.post(evaluate_url, json=evaluate_data)
+print("상태 코드:", response2.status_code)
+print("응답 내용:", response2.json())
