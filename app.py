@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from config import Config
 from database.dbTable import db
-from api.routes import api_bp
+from api.routes import api_v1_bp
 
 def create_app():
     app = Flask(__name__)
@@ -16,8 +16,8 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    # API Blueprint 등록 (이때 모든 경로 앞에 /api가 붙음)
-    app.register_blueprint(api_bp, url_prefix='/api')
+    # API Blueprint 등록
+    app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
 
     return app
 
