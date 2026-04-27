@@ -3,6 +3,7 @@ from flask_cors import CORS
 from config import Config
 from database.dbTable import db
 from api.routes import api_v1_bp
+from api.admin_routes import admin_bp
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +19,7 @@ def create_app():
 
     # API Blueprint 등록
     app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
+    app.register_blueprint(admin_bp, url_prefix='/api/v1/admin')
 
     return app
 

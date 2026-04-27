@@ -22,7 +22,9 @@ def get_daily_pose():
         "data": {
             "daily_id": today_pose.daily_id,
             "pose_id": pose_info.pose_id,
-            "pose_name": pose_info.pose_name
+            "pose_name": pose_info.pose_name,
+            "originalImage": pose_info.original_image,
+            "publicImage": pose_info.public_image
         }
     }), 200
 
