@@ -25,7 +25,7 @@ def get_all_poses():
         
         return jsonify({"status": "success", "data": result}), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "포즈 목록을 불러오던 중 문제가 발생했습니다."}), 500
 
 #새로운 포즈 등록
 @admin_bp.route('/poses', methods=['POST'])
@@ -43,7 +43,7 @@ def create_pose():
         return jsonify({"status": "success", "message": "포즈가 등록되었습니다."}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 400
+        return jsonify({"status": "error", "message": "포즈 등록에 실패하였습니다."}), 400
 
 #포즈 삭제
 @admin_bp.route('/poses/<int:pose_id>', methods=['DELETE'])
@@ -58,7 +58,7 @@ def delete_pose(pose_id):
         return jsonify({"status": "success", "message": "포즈가 삭제되었습니다."}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "포즈를 삭제하던 중 문제가 발생했습니다."}), 500
 
 
 
@@ -85,7 +85,7 @@ def get_daily_poses():
                 })
         return jsonify({"status": "success", "data": result}), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "포즈 정보를 불러오던 중 문제가 발생했습니다."}), 500
 
 #특정 날짜에 포즈 지정 (생성 및 수정)
 @admin_bp.route('/daily-poses', methods=['POST'])
@@ -114,7 +114,7 @@ def set_daily_pose():
         return jsonify({"status": "success", "message": message}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 400
+        return jsonify({"status": "error", "message": "포즈 지정에 실패하였습니다."}), 400
 
 #특정 날짜의 포즈 지정 취소 (삭제)
 @admin_bp.route('/daily-poses/<string:date_str>', methods=['DELETE'])
@@ -131,4 +131,4 @@ def delete_daily_pose(date_str):
         return jsonify({"status": "success", "message": "해당 날짜의 포즈 지정이 취소되었습니다."}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "해당 날짜 포즈 지정 취소에 실패했습니다."}), 500
