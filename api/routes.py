@@ -63,4 +63,4 @@ def evaluate_pose():
         }), 200
 
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "유사도 계산 중 문제가 발생하였습니다."}), 500
