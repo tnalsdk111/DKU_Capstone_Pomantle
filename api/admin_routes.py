@@ -43,7 +43,7 @@ def create_pose():
         return jsonify({"status": "success", "message": "포즈가 등록되었습니다."}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({"status": "error", "message": "포즈 등록에 실패하였습니다."}), 400
+        return jsonify({"status": "error", "message": "필수 데이터가 누락되었습니다."}), 400
 
 #포즈 삭제
 @admin_bp.route('/poses/<int:pose_id>', methods=['DELETE'])
