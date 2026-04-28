@@ -19,7 +19,8 @@ def get_all_poses():
             "id": pose.pose_id,
             "poseName": pose.pose_name,
             "originalImage": pose.original_image,
-            "publicImage": pose.public_image
+            "publicImage": pose.public_image,
+            "createdAt": pose.created_at.strftime("%Y-%m-%d") if pose.created_at else None
         } for pose in poses]
         
         return jsonify({"status": "success", "data": result}), 200
