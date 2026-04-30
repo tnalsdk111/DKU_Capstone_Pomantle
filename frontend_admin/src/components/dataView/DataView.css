@@ -26,3 +26,16 @@
   object-fit: contain; /* 이미지가 잘리지 않게 하려면 contain, 꽉 채우려면 cover */
   padding: 10px; /* 이미지 테두리에 약간의 여백 */
 }
+
+.card-footer {
+    display: flex;         /* 이 줄을 추가해야 gap이 동작합니다 */
+    flex-direction: column; /* 만약 위아래로 배치하고 싶다면 column */
+    /* 또는 가로로 배치하고 싶다면: */
+    /* flex-direction: row; */ 
+    
+    flex-shrink: 0;
+    width: 100%;
+    gap: 10px;             /* 이제 버튼 사이가 20px만큼 띄워집니다 */
+    margin-top: 20px;
+    padding-bottom: 10px;
+}

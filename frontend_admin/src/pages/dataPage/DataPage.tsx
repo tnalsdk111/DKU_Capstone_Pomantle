@@ -1,9 +1,10 @@
 import React from 'react';
 import DataView from '../../components/dataView/DataView';
-import { FixedSizeList as List } from 'react-window';
+import {List} from 'react-window';
 import './DataPage.css';
 import { useEffect, useState } from 'react';
 import { DBManager } from '../../managers/DBManager';
+import { useAllData } from '../../components/useAllData/UseAllData';
 
 // interface RowProps{
 //   index: number;
@@ -65,8 +66,17 @@ function DataPage() {
   //     </List>
   //   </div>
   // );
+  
+  // return (
+  //   <List
+  //     rowComponent={RowComponent}
+  //     rowCount={1}
+  //     rowHeight={1}
+  //     rowProps={{}}
+  //   />
+  // )
 
-  const dummyData = DBManager.getInstance().getAllData();
+  const dummyData = useAllData();
 
   return (
     <div className="data-page-container">

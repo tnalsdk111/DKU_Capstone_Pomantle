@@ -1,32 +1,28 @@
-/* 화면 전체를 어둡게 덮는 배경 */
+/* 1. 배경 및 레이아웃 컨테이너 */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 달력보다 높은 숫자 */
+  z-index: 1000;
 }
 
-/* 실제 팝업 박스 */
+/* 2. 팝업 박스 */
 .modal-content {
   background: white;
-  padding: 40px;            /* 안쪽 여백을 조금 더 늘려주면 고급스러워요 */
-  border-radius: 25px;      /* 크기가 커지면 라운드도 조금 더 주는 게 예쁩니다 */
-  
-  /* [수정] 너비를 시원하게 키워주세요 */
-  width: 800px;             
-  max-width: 90%;           /* 모바일이나 작은 화면에서도 안 삐져나가게 방어 */
-  
-  /* 높이는 내용물에 따라 자동으로 늘어나게 두는 것이 좋습니다 */
-  min-height: 400px;        
-  
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-  animation: modal-show 0.3s;
+  padding: 25px;
+  border-radius: 20px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: modal-show 0.3s ease-out;
 }
 
 @keyframes modal-show {
@@ -34,12 +30,21 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 3. 헤더 및 바디 */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
   margin-bottom: 15px;
+}
+
+.modal-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .close-btn {
@@ -47,42 +52,19 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
+  padding: 0 5px;
 }
 
-.modal-body {
-    flex-grow: 1; 
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* 내용은 위에서부터 시작 */
-    margin-bottom: 20px;
-}
-
-/* 새로 추가하는 스타일: 버튼을 좌우로 배치 */
-.modal-button-group {
-  display: flex;
-  justify-content: center; /* 중앙으로 모으기 */
-  gap: 30px;              /* 버튼 사이 간격 넉넉히 */
-  padding-top: 10px;
-}
-
-/* 바구니 안의 버튼들이 공평하게 너비를 나눠 가지도록 설정 */
-.modal-button-group .custom-btn {
-  flex: 1; /* 1:1 비율로 너비 차지 */
-}
-
-/* 팝업 전체 컨테이너 */
-.modal-content {
-    display: flex;
-    flex-direction: column;
-    min-height: 450px; /* 팝업의 최소 높이를 어느 정도 잡아주세요 */
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* 💡 푸터(버튼) 설정 */
+/* 4. 푸터 및 버튼 그룹 (가로/세로 유연하게 사용) */
 .modal-footer {
-    flex-shrink: 0;
-    width: 100%;
-    margin-top: auto; /* 위쪽 마진을 자동으로 채워 맨 아래로 내려가게 함 */
-    padding-bottom: 10px;
+  display: flex;
+  flex-direction: column; /* 기본 세로 배치 */
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* 상황에 따라 가로 배치가 필요하면 이 클래스를 추가하세요 */
+.modal-footer.row {
+  flex-direction: row;
 }

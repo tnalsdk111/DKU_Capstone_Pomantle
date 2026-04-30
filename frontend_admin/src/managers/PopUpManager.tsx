@@ -19,16 +19,15 @@ export class PopUpManager{
     }
 
     public pushPopUp(popUp: PopUp): void{
-        console.log("asdf");
         this.popUpMap.set(popUp.currentPopUpType, popUp);
     }
 
     public openPopUp(popUpType: PopUpType, data?: any): void{
         const popUp = this.popUpMap.get(popUpType);
-        //console.log(data);
+        
         if(popUp) {
-            if(data) (popUp as any).showData(data.date);
-            popUp.open();
+            if(data) (popUp as any).showData(data);
+            else popUp.open();
         }
         else{
             console.error(`${popUpType} 팝업을 찾을 수 없습니다.`);

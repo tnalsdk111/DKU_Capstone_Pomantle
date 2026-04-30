@@ -1,7 +1,10 @@
+import { Results } from '@mediapipe/holistic';
+
 export interface Data{
     id: number;
     originalImage: string;
     publicImage: string;
     poseName: string;
-    date: string;
+    vector: Results | null;
+    createdAt: string;
 }

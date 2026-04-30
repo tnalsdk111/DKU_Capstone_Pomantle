@@ -18,7 +18,18 @@ export const CalendarDataPopUp = () => {
     const [selectedDate, setSelectedDate] = useState<string>("");
 
     const onClick = () => {
-        PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA);
+        if(data != null){
+            const payload = {
+                id: data.id,
+                originalImage: data.originalImage,
+                publicImage: data.publicImage,
+                poseName: data.poseName,
+            };
+            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, payload);
+        }
+        else{
+            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, null);
+        }
     }
 
     const initPopUp: CalendarDataPopUp = {
@@ -27,9 +38,9 @@ export const CalendarDataPopUp = () => {
         open: () => setIsVisible(true),
         close: () => setIsVisible(false),
 
-        showData: (date:string) => {
-            setSelectedDate(date);
-            setData(DBManager.getInstance().getDataByDate(date));
+        showData: (data:any) => {
+            setSelectedDate(data.date);
+            setData(DBManager.getInstance().getDataByDate(data.date));
             setIsVisible(true);
         }
     };
@@ -48,11 +59,22 @@ export const CalendarDataPopUp = () => {
                     <button className="close-btn" onClick={initPopUp.close}>&times;</button>
                 </div>
                 <div className='modal-body'>
-                    {data ? ( <DataView item={data} />) : (<p>지정된 데이터가 없습니다.</p>)}
+                    {data ? ( 
+                        <div className='modal-footer'> 
+                            <DataView item={data} /> 
+                            <CustomButton label="데이터 할당" variant="primary" size="large"/>
+                            <CustomButton label="데이터 취소" variant="primary" size="large"/>
+                        </div>) 
+                        : 
+                        (<p>지정된 데이터가 없습니다.</p>)
+                    }
                 </div>
+                
                 {!data && (
                     <div className='modal-footer'>
                         <CustomButton label='해당 날짜 데이터 생성' variant='primary' size='large' onClick={onClick}/>
+                        
+                        <CustomButton label='해당 날짜 데이터 할당' variant='primary' size='large' onClick={onClick}/>
                     </div>)
                 }
             </div>

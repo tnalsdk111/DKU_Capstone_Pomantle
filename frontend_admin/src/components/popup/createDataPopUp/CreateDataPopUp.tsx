@@ -8,6 +8,12 @@ import { InitHolistic, drawHolisticResults } from "../../holistic/Holistic";
 import './CreateDataPopUp.css'
 import CustomButton from '../../button/CustomButton';
 import { captureCombinedImage } from './CreateDataPopUpHelper';
+import { Data } from '../../../models/Data';
+import { DBManager } from '../../../managers/DBManager';
+
+interface CreateDataPopUp extends PopUp{
+    showData(date:string): void;
+}
 
 export const CreateDataPopUp = () => {
     const webcamRef = useRef<Webcam | null>(null);
@@ -16,9 +22,10 @@ export const CreateDataPopUp = () => {
     const holisticRef = useRef<any>(null);
     const countdownRef = useRef<any>(null);
     const lastResultRef = useRef<any>(null);
+    const idRef = useRef<any>(-1);
 
-    const [originImg, setOriginImg] = useState<string | null>(null); // 원본 이미지
-    const [publicImg, setPublicImg] = useState<string | null>(null); // 공개 이미지
+    const [originImg, setOriginImg] = useState<string>(""); // 원본 이미지
+    const [publicImg, setPublicImg] = useState<string>(""); // 공개 이미지
     const [poseName, setPoseName] = useState<string>("");
     const [timer, setTimer] = useState<number>(0);
     
@@ -51,6 +58,31 @@ export const CreateDataPopUp = () => {
         }
     };
 
+    const saveAll = () => {
+        const chk = (idRef.current === -1);
+
+        const dataSave:Data = {
+            id: idRef.current,
+            poseName: poseName,
+            vector: lastResultRef.current,
+            originalImage: originImg,
+            publicImage: publicImg,
+            createdAt: new Date().toISOString()
+        }
+
+        try{
+            console.log("저장할 데이터: ", dataSave);
+            if(!chk){
+                DBManager.getInstance().updateData(dataSave);
+            }
+            else{
+                DBManager.getInstance().addData(dataSave);
+            }
+        } catch(error){
+            console.error("저장 실패: ", error);
+        }
+    }
+
     useEffect(() => { 
         if (timer > 0) { 
             countdownRef.current = setInterval(() => { 
@@ -73,20 +105,28 @@ export const CreateDataPopUp = () => {
         }
     }, [timer, isVisible]); 
 
-    const initPopUp: PopUp = {
+    const initPopUp: CreateDataPopUp = {
         currentPopUpType: PopUpType.CREATEDATA,
         init: () => {},
         open: () => setIsVisible(true),
         close: () => {
             resetAllStates();
             setIsVisible(false);
+        },
+        showData: (data:any) => {
+            console.log(data);
+            if(data.poseName) setPoseName(data.poseName);
+            if(data.originalImage) setOriginImg(data.originalImage);
+            if(data.publicImage) setPublicImg(data.publicImage);
+            if(data.id) idRef.current = data.id;
+            setIsVisible(true);
         }
     };
 
     useEffect(() => {
         if(!isVisible) return;
 
-        resetAllStates();
+        if(!poseName && !originImg) resetAllStates();
         
         const handleMediaPipeResults = (results: any) => {
             lastResultRef.current = results;
@@ -210,6 +250,7 @@ export const CreateDataPopUp = () => {
                         label='데이터 저장' 
                         variant='primary' 
                         size='large' 
+                        onClick={() => saveAll()}
                         disabled={!poseName || !publicImg}
                     />
                 </div>
