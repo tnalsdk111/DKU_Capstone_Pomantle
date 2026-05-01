@@ -78,6 +78,7 @@ def get_daily_poses():
                 result.append({
                     "date": dp.target_date.strftime("%Y-%m-%d"),
                     "data": {
+                        "id": pose.pose_id,
                         "poseName": pose.pose_name,
                         "originalImage": pose.original_image,
                         "publicImage": pose.public_image
