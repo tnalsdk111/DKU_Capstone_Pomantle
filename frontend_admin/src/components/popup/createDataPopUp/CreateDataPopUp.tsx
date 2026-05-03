@@ -23,6 +23,9 @@ export const CreateDataPopUp = () => {
     const countdownRef = useRef<any>(null);
     const lastResultRef = useRef<any>(null);
     const idRef = useRef<any>(-1);
+    const usedAtRef = useRef<string>("");
+    const todayRef = useRef<string>("");
+
 
     const [originImg, setOriginImg] = useState<string>(""); // 원본 이미지
     const [publicImg, setPublicImg] = useState<string>(""); // 공개 이미지
@@ -32,10 +35,13 @@ export const CreateDataPopUp = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     const resetAllStates = () => {
-        setOriginImg(null);
-        setPublicImg(null);
+        setOriginImg("");
+        setPublicImg("");
         setTimer(0);
         setPoseName("");
+        idRef.current = -1;
+        usedAtRef.current = "";
+        todayRef.current = "";
         if(countdownRef.current){
             clearInterval(countdownRef.current);
             countdownRef.current = null;
@@ -43,23 +49,25 @@ export const CreateDataPopUp = () => {
     }
 
     const startTimer = (seconds:number) => {
-        resetAllStates();
+        setOriginImg("");
+        setPublicImg("");
         setTimer(seconds);
     };
 
     const handleCapture = () => {
         const images = captureCombinedImage(webcamRef, dataCanvasRef, lastResultRef.current);
-
+        
         if(images){
             const { originImage, publicImage } = images;
-
-            setOriginImg(originImage);
-            setPublicImg(publicImage);
+            if(originImage !== "data:,") setOriginImg(originImage);
+            if(publicImage !== "data:,") setPublicImg(publicImage);
         }
     };
 
     const saveAll = () => {
         const chk = (idRef.current === -1);
+        if(idRef.current === -1) idRef.current = DBManager.getInstance().getID() + 1; 
+        if(todayRef.current !== "") usedAtRef.current = todayRef.current;
 
         const dataSave:Data = {
             id: idRef.current,
@@ -67,7 +75,8 @@ export const CreateDataPopUp = () => {
             vector: lastResultRef.current,
             originalImage: originImg,
             publicImage: publicImg,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            usedAt: usedAtRef.current,
         }
 
         try{
@@ -84,25 +93,17 @@ export const CreateDataPopUp = () => {
     }
 
     useEffect(() => { 
+        if(!isVisible) return;
+
         if (timer > 0) { 
             countdownRef.current = setInterval(() => { 
                 setTimer((prev:number) => prev - 1);
             }, 1000);
-
-            return () => {
-                if(countdownRef.current)    
-                   clearInterval(countdownRef.current);
-            } 
         }
         else if (timer === 0 && webcamRef.current) { 
-
-            if(countdownRef.current){
-                clearInterval(countdownRef.current);
-                countdownRef.current = null;
-            }
-
             handleCapture();
         }
+        return () => clearInterval(countdownRef.current);
     }, [timer, isVisible]); 
 
     const initPopUp: CreateDataPopUp = {
@@ -114,19 +115,19 @@ export const CreateDataPopUp = () => {
             setIsVisible(false);
         },
         showData: (data:any) => {
-            console.log(data);
+            console.log("들어온 데이터 : ", data);
             if(data.poseName) setPoseName(data.poseName);
             if(data.originalImage) setOriginImg(data.originalImage);
             if(data.publicImage) setPublicImg(data.publicImage);
             if(data.id) idRef.current = data.id;
+            if(data.usedAt) usedAtRef.current = data.usedAt;
+            if(data.today) todayRef.current = data.today;
             setIsVisible(true);
         }
     };
 
     useEffect(() => {
         if(!isVisible) return;
-
-        if(!poseName && !originImg) resetAllStates();
         
         const handleMediaPipeResults = (results: any) => {
             lastResultRef.current = results;

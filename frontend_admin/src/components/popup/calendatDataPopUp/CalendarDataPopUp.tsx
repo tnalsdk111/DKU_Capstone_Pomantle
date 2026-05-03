@@ -17,19 +17,29 @@ export const CalendarDataPopUp = () => {
     const [data, setData] = useState<Data | null>();
     const [selectedDate, setSelectedDate] = useState<string>("");
 
-    const onClick = () => {
+    const CreateData = () => {
         if(data != null){
-            const payload = {
-                id: data.id,
-                originalImage: data.originalImage,
-                publicImage: data.publicImage,
-                poseName: data.poseName,
-            };
-            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, payload);
+            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, data);
         }
         else{
-            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, null);
+            const payload = {
+                today: selectedDate
+            }
+            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, payload);
         }
+    }
+
+    const GetData = () => {
+
+    }
+
+    const CancelData = () => {
+        if(!data) return;
+        const dataSave:Data = {
+            ...data,
+            usedAt: "",
+        }
+        DBManager.getInstance().updateData(dataSave);
     }
 
     const initPopUp: CalendarDataPopUp = {
@@ -40,10 +50,25 @@ export const CalendarDataPopUp = () => {
 
         showData: (data:any) => {
             setSelectedDate(data.date);
-            setData(DBManager.getInstance().getDataByDate(data.date));
+            const freshData = DBManager.getInstance().getDataByDate(data.date);
+            setData(freshData);
             setIsVisible(true);
         }
     };
+
+    useEffect(() => {
+        const updateCurrentData = () => {
+            if (selectedDate) {
+                const freshData = DBManager.getInstance().getDataByDate(selectedDate);
+                setData(freshData);
+            }
+        };
+
+        const db = DBManager.getInstance();
+        db.subscribe(updateCurrentData);
+
+        return () => db.unsubscribe(updateCurrentData);
+    }, [selectedDate]);
 
     useEffect(() => {
         PopUpManager.getInstance().pushPopUp(initPopUp);
@@ -61,9 +86,9 @@ export const CalendarDataPopUp = () => {
                 <div className='modal-body'>
                     {data ? ( 
                         <div className='modal-footer'> 
-                            <DataView item={data} /> 
+                            <DataView data={data} /> 
                             <CustomButton label="데이터 할당" variant="primary" size="large"/>
-                            <CustomButton label="데이터 취소" variant="primary" size="large"/>
+                            <CustomButton label="데이터 취소" variant="primary" size="large" onClick={CancelData}/>
                         </div>) 
                         : 
                         (<p>지정된 데이터가 없습니다.</p>)
@@ -72,9 +97,9 @@ export const CalendarDataPopUp = () => {
                 
                 {!data && (
                     <div className='modal-footer'>
-                        <CustomButton label='해당 날짜 데이터 생성' variant='primary' size='large' onClick={onClick}/>
+                        <CustomButton label='데이터 생성' variant='primary' size='large' onClick={CreateData}/>
                         
-                        <CustomButton label='해당 날짜 데이터 할당' variant='primary' size='large' onClick={onClick}/>
+                        <CustomButton label='데이터 할당' variant='primary' size='large' onClick={GetData}/>
                     </div>)
                 }
             </div>

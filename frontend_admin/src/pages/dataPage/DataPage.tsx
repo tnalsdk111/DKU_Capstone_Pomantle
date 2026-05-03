@@ -82,7 +82,7 @@ function DataPage() {
     <div className="data-page-container">
       <div className="data-grid">
         {dummyData.map((item) => (
-          <DataView key={item.id} item={item} />
+          <DataView key={item.id} data={item} />
         ))}
       </div>
     </div>

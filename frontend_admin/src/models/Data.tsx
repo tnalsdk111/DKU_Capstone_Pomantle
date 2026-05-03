@@ -7,4 +7,5 @@ export interface Data{
     poseName: string;
     vector: Results | null;
     createdAt: string;
+    usedAt: string;
 }
