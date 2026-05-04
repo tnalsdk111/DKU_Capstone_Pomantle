@@ -1,0 +1,32 @@
+/* DataPage.css */
+.data-page-container {
+  padding: 40px;
+  display: block;
+  justify-content: center;
+  background-color: #f9f9f9; /* 배경색을 살짝 주면 카드가 더 잘 보여요 */
+}
+
+
+
+/* 화면이 아주 작아질 때만 1줄로 변경 (반응형) */
+@media (max-width: 1000px) {
+  .data-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 가상 리스트 내부의 스크롤바 숨기기 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* 크롬, 사파리 */
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE, 에지 */
+  scrollbar-width: none; /* 파이어폭스 */
+}
+
+/* 만약 스크롤바를 유지하고 싶다면 예쁘게 디자인 */
+.data-page-container {
+  padding: 20px;
+  background-color: #f8f9fa; /* 배경색을 넣어 카드와 구분 */
+}
+

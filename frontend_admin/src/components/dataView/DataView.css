@@ -1,0 +1,41 @@
+/* 이미지 그룹: 가로 너비를 90% 이상 사용하도록 */
+.item-image-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* 이미지 사이 간격 약간 넓힘 */
+  width: 95%; /* 카드의 너비를 거의 다 사용 */
+  margin: 10px 0;
+}
+
+/* 개별 이미지 박스: 너비 제한을 풀고 크기를 키움 */
+.image-box {
+  flex: 1;
+  max-width: 350px; /* 기존 200px에서 350px 정도로 대폭 확대 */
+  aspect-ratio: 1 / 1.2; /* 세로로 약간 더 긴 느낌 유지 또는 1/1 */
+  background: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05); /* 깊이감 추가 */
+  object-fit: cover;
+}
+
+.image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 이미지가 잘리지 않게 하려면 contain, 꽉 채우려면 cover */
+  padding: 10px; /* 이미지 테두리에 약간의 여백 */
+}
+
+.card-footer {
+    display: flex;         /* 이 줄을 추가해야 gap이 동작합니다 */
+    flex-direction: column; /* 만약 위아래로 배치하고 싶다면 column */
+    /* 또는 가로로 배치하고 싶다면: */
+    /* flex-direction: row; */ 
+    
+    flex-shrink: 0;
+    width: 100%;
+    gap: 10px;             /* 이제 버튼 사이가 20px만큼 띄워집니다 */
+    margin-top: 20px;
+    padding-bottom: 10px;
+}

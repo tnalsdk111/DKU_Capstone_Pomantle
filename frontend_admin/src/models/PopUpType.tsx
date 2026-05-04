@@ -1,0 +1,5 @@
+export enum PopUpType{
+    NONE = 'NONE',
+    CALENDARDATA = 'CALENDARDATA',
+    CREATEDATA = 'CREATEDATA'
+}
