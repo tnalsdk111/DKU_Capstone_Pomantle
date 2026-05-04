@@ -23,3 +23,43 @@
     transform: rotate(360deg);
   }
 }
+
+.loading-text {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.load-daily-fail {
+  max-width: 420px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.load-error {
+  color: #b00020;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.load-hint {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.home-from-load-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #1e4fff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.home-from-load-btn:hover {
+  opacity: 0.92;
+}

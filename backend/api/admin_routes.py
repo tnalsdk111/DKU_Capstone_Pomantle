@@ -34,7 +34,7 @@ def create_pose():
     try:
         new_pose = Pose(
             pose_name=data['poseName'],
-            target_vector=data['target_vector'], #MediaPipe에서 추출한 값
+            target_vector=data['target_vector'],  # 평가용: 캔버스 픽셀 [[u,v], ...] JSON 배열
             original_image=data.get('originalImage', ''),
             public_image=data.get('publicImage', '')
         )

@@ -1,7 +1,7 @@
 import "./MainPage.css";
 
 type Props = {
-  onStart: () => void;
+  onStart: () => void; // onStart 함수는 인자 없고, 반환값도 없는 함수라고 정의
 };
 
 function MainPage({ onStart }: Props) {

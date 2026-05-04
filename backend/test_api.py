@@ -4,8 +4,9 @@ import json
 
 BASE_URL = "http://127.0.0.1:5000/api/v1"
 
-# 임의의 21개 랜드마크 데이터 (MediaPipe 형식 모방)
-dummy_vector = [{"x": 0.1, "y": 0.2, "z": 0.3} for _ in range(21)]
+# 평가 API는 캔버스 픽셀 쌍 [[u,v], ...] — DB target_vector도 동일 형식이어야 함
+dummy_pixel_landmarks = [[100.0 + i * 2.0, 200.0 + i * 1.5] for i in range(24)]
+
 
 def print_response(title, response):
     print(f"\n--- {title} ---")
@@ -23,7 +24,7 @@ def run_tests():
     # ==========================================
     pose_payload = {
         "poseName": "테스트 나무자세",
-        "target_vector": dummy_vector,
+        "target_vector": dummy_pixel_landmarks,
         "originalImage": "/images/original_tree.png",
         "publicImage": "/images/public_tree.png"
     }
@@ -66,7 +67,7 @@ def run_tests():
     # ==========================================
     evaluate_payload = {
         "daily_id": daily_id,
-        "landmarks": dummy_vector # 정답과 완전히 똑같은 데이터를 보내서 100점이 나오는지 확인
+        "landmarks": dummy_pixel_landmarks,
     }
     res_evaluate = requests.post(f"{BASE_URL}/evaluate", json=evaluate_payload)
     print_response("4. 유사도 평가 API (User)", res_evaluate)

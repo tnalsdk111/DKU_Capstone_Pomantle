@@ -2,7 +2,7 @@
 CREATE TABLE poses (
     pose_id BIGSERIAL PRIMARY KEY,           -- 자동 증가하는 큰 정수형 ID
     pose_name VARCHAR(100) NOT NULL,        -- 포즈 이름
-    target_vector JSONB NOT NULL,           -- MediaPipe 랜드마크 데이터 (JSONB 포맷)
+    target_vector JSONB NOT NULL,           -- 평가용: 캔버스 픽셀 [[u,v], ...] JSON 배열
     original_image VARCHAR(255),            -- 어드민 원본 이미지 경로
     public_image VARCHAR(255),              -- 사용자용 공개 이미지 경로
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc') -- 생성 시간
