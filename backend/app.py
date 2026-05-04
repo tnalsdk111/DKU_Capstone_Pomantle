@@ -1,18 +1,29 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 from flask_cors import CORS
+from config import Config
+from database.dbTable import db
+from api.routes import api_v1_bp
+from api.admin_routes import admin_bp
 
-app = Flask(__name__)
-CORS(app)
+def create_app():
+    app = Flask(__name__)
+    
+    # 설정 파일 불러오기
+    app.config.from_object(Config)
+    CORS(app)
 
-@app.route('/api/save-record', methods=['POST'])
-def save_record():
-    record_data = request.json
-    print(f'받은 데이터: {record_data}')
+    # 데이터베이스 초기화 및 앱 연동
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
 
-    return jsonify({
-        "status": "success",
-        "message": "데이터가 무사히 서버에 도착했습니다."
-    }), 200
+    # API Blueprint 등록
+    app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
+    app.register_blueprint(admin_bp, url_prefix='/api/v1/admin')
+
+    return app
+
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
