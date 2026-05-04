@@ -1,0 +1,70 @@
+/* 1. 배경 및 레이아웃 컨테이너 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 2. 팝업 박스 */
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: modal-show 0.3s ease-out;
+}
+
+@keyframes modal-show {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 3. 헤더 및 바디 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+/* 4. 푸터 및 버튼 그룹 (가로/세로 유연하게 사용) */
+.modal-footer {
+  display: flex;
+  flex-direction: column; /* 기본 세로 배치 */
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* 상황에 따라 가로 배치가 필요하면 이 클래스를 추가하세요 */
+.modal-footer.row {
+  flex-direction: row;
+}

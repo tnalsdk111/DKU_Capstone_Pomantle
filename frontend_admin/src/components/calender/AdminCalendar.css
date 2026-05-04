@@ -1,0 +1,47 @@
+/* AdminCalendar.css */
+
+.admin-calendar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.react-calendar {
+  width: 700px !important;
+  max-width: 95%;
+  
+  /* [수정 1] 비율 고정을 지웁니다. 내용물(날짜)이 박스 크기를 결정하게 하세요. */
+  height: auto !important; 
+  
+  /* [수정 2] 잘리는 현상을 방지하기 위해 hidden을 지우거나 visible로 바꿉니다. */
+  overflow: visible; 
+
+  background: white;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: none !important;
+  padding: 20px;
+}
+
+/* 내부 날짜들이 꽉 차게 정렬 */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+
+.react-calendar__tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* [수정 3] 날짜 칸의 위아래 여백을 주어 박스가 자연스럽게 늘어나게 합니다. */
+  padding: 20px 0 !important; 
+  height: auto !important;
+}
+
+/* 폰트 크기 살짝 키우기 (선택사항) */
+.react-calendar__tile abbr {
+  font-size: 1.1rem;
+}
