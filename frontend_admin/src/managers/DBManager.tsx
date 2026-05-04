@@ -1,12 +1,12 @@
 import { Data } from "../models/Data";
 
 let dummyData: Data[] = [ // 샘플링용 데이터
-  { id: 1, poseName: "사과", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-3" },
-  { id: 2, poseName: "바나나", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-4" },
-  { id: 3, poseName: "키위", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-5" },
-  { id: 4, poseName: "야쿠르트", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-6" },
-  { id: 5, poseName: "오렌지", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-7" },
-  { id: 6, poseName: "귤", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-8" },
+  { id: 0, poseName: "사과", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-3" },
+  { id: 1, poseName: "바나나", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-4" },
+  { id: 2, poseName: "키위", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-5" },
+  { id: 3, poseName: "야쿠르트", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-6" },
+  { id: 4, poseName: "오렌지", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-7" },
+  { id: 5, poseName: "귤", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-8" },
 ];
 
 export class DBManager{
