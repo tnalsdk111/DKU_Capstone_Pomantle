@@ -22,10 +22,12 @@ export class PopUpManager{
         this.popUpMap.set(popUp.currentPopUpType, popUp);
     }
 
-    public openPopUp(popUpType: PopUpType): void{
+    public openPopUp(popUpType: PopUpType, data?: any): void{
         const popUp = this.popUpMap.get(popUpType);
+        
         if(popUp) {
-            popUp.open();
+            if(data) (popUp as any).showData(data);
+            else popUp.open();
         }
         else{
             console.error(`${popUpType} 팝업을 찾을 수 없습니다.`);

@@ -6,13 +6,17 @@ import { PopUpManager } from '../../managers/PopUpManager';
 import { PopUpType } from '../../models/PopUpType';
 
 const AdminCalendar = () => {
-  const onDataClick = () => {
-    PopUpManager.getInstance().openPopUp(PopUpType.CALENDARDATA);
+  const onDataClick = (value: Date) => {
+    const dateString = `${value.getFullYear()}-${value.getMonth() + 1}-${value.getDate()}`;
+    const payload = {
+      date: dateString,
+    };
+    PopUpManager.getInstance().openPopUp(PopUpType.CALENDARDATA, payload);
   }
 
   return (
     <div className="admin-calendar-wrapper">
-      <Calendar onClickDay={onDataClick}/>
+      <Calendar onClickDay={(value) => onDataClick(value as Date)}/>
     </div>
   );
 };

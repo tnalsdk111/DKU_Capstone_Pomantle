@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import MainPage from "./pages/mainPage/MainPage";
-import GamePage from "./pages/GamePage/GamePage";
+import GamePage from "./pages/gamePage/GamePage";
 import LoadManager from "./pages/LoadManager/LoadManager";
 
 

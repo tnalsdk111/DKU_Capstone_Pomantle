@@ -2,17 +2,45 @@ import React, { useState, useEffect } from 'react'
 import { PopUp } from "../../../models/PopUp";
 import { Data } from '../../../models/Data';
 import { PopUpManager } from '../../../managers/PopUpManager';
+import { DBManager } from '../../../managers/DBManager';
 import CustomButton from '../../button/CustomButton';
 import './CalendarDataPopUp.css'
 import { PopUpType } from '../../../models/PopUpType';
+import DataView from '../../dataView/DataView';
 
 interface CalendarDataPopUp extends PopUp{
-    showData(data: Data): void;
+    showData(date:string): void;
 }
 
 export const CalendarDataPopUp = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [data, setData] = useState<Data | null>(null);
+    const [data, setData] = useState<Data | null>();
+    const [selectedDate, setSelectedDate] = useState<string>("");
+
+    const CreateData = () => {
+        if(data != null){
+            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, data);
+        }
+        else{
+            const payload = {
+                today: selectedDate
+            }
+            PopUpManager.getInstance().openPopUp(PopUpType.CREATEDATA, payload);
+        }
+    }
+
+    const GetData = () => {
+
+    }
+
+    const CancelData = () => {
+        if(!data) return;
+        const dataSave:Data = {
+            ...data,
+            usedAt: "",
+        }
+        DBManager.getInstance().updateData(dataSave);
+    }
 
     const initPopUp: CalendarDataPopUp = {
         currentPopUpType: PopUpType.CALENDARDATA,
@@ -20,11 +48,27 @@ export const CalendarDataPopUp = () => {
         open: () => setIsVisible(true),
         close: () => setIsVisible(false),
 
-        showData: (data: Data) => {
-            setData(data);
+        showData: (data:any) => {
+            setSelectedDate(data.date);
+            const freshData = DBManager.getInstance().getDataByDate(data.date);
+            setData(freshData);
             setIsVisible(true);
         }
-    }
+    };
+
+    useEffect(() => {
+        const updateCurrentData = () => {
+            if (selectedDate) {
+                const freshData = DBManager.getInstance().getDataByDate(selectedDate);
+                setData(freshData);
+            }
+        };
+
+        const db = DBManager.getInstance();
+        db.subscribe(updateCurrentData);
+
+        return () => db.unsubscribe(updateCurrentData);
+    }, [selectedDate]);
 
     useEffect(() => {
         PopUpManager.getInstance().pushPopUp(initPopUp);
@@ -36,19 +80,28 @@ export const CalendarDataPopUp = () => {
         <div className='modal-overlay' onClick={initPopUp.close}>
             <div className='modal-content' onClick={(e) => e.stopPropagation()}>
                 <div className='modal-header'>
-                    <h2>{data? data.poseName : "데이터 없음"}</h2>
+                    <h2>{data? `${selectedDate} 데이터` : `${selectedDate} 데이터 없음`}</h2>
                     <button className="close-btn" onClick={initPopUp.close}>&times;</button>
                 </div>
                 <div className='modal-body'>
-                    <div className='modal-button-group'>
-                        <CustomButton variant='image-btn' size='square'>
-                            <img alt="원본 이미지" />
-                        </CustomButton>
-                        <CustomButton variant='image-btn' size='square'>
-                            <img alt="공개용 이미지" />
-                        </CustomButton>
-                    </div>
+                    {data ? ( 
+                        <div className='modal-footer'> 
+                            <DataView data={data} /> 
+                            <CustomButton label="데이터 할당" variant="primary" size="large"/>
+                            <CustomButton label="데이터 취소" variant="primary" size="large" onClick={CancelData}/>
+                        </div>) 
+                        : 
+                        (<p>지정된 데이터가 없습니다.</p>)
+                    }
                 </div>
+                
+                {!data && (
+                    <div className='modal-footer'>
+                        <CustomButton label='데이터 생성' variant='primary' size='large' onClick={CreateData}/>
+                        
+                        <CustomButton label='데이터 할당' variant='primary' size='large' onClick={GetData}/>
+                    </div>)
+                }
             </div>
         </div>
     )
