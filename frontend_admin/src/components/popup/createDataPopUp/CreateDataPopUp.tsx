@@ -22,7 +22,7 @@ export const CreateDataPopUp = () => {
     const holisticRef = useRef<any>(null);
     const countdownRef = useRef<any>(null);
     const lastResultRef = useRef<any>(null);
-    const idRef = useRef<any>(-1);
+    const idRef = useRef<number>(-1);
     const usedAtRef = useRef<string>("");
     const todayRef = useRef<string>("");
 
@@ -66,8 +66,8 @@ export const CreateDataPopUp = () => {
 
     const saveAll = () => {
         const chk = (idRef.current === -1);
-        if(idRef.current === -1) idRef.current = DBManager.getInstance().getID() + 1; 
-        if(todayRef.current !== "") usedAtRef.current = todayRef.current;
+        if(idRef.current === -1) idRef.current = DBManager.getInstance().getID(); 
+        if(todayRef.current !== "" && usedAtRef.current === "") usedAtRef.current = todayRef.current;
 
         const dataSave:Data = {
             id: idRef.current,
@@ -119,7 +119,7 @@ export const CreateDataPopUp = () => {
             if(data.poseName) setPoseName(data.poseName);
             if(data.originalImage) setOriginImg(data.originalImage);
             if(data.publicImage) setPublicImg(data.publicImage);
-            if(data.id) idRef.current = data.id;
+            if(data.id != null) idRef.current = data.id;
             if(data.usedAt) usedAtRef.current = data.usedAt;
             if(data.today) todayRef.current = data.today;
             setIsVisible(true);
