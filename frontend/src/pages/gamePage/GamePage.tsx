@@ -6,11 +6,16 @@ import PhotoPopup, { PhotoPopupMode } from "../../components/popups/PhotoPopUp";
 import CameraContainer from "../../components/camera/Camera";
 import ApiService from "../../api/ApiService";
 import type { DailyPoseData } from "../../models/ApiTypes";
-import { API_ORIGIN } from "../../constants/ApiConfig";
 import {
   appendEvaluateRecord,
-  resolveImageUrl,
 } from "../../utils/gameLocalStorage";
+import { MOCK_EVALUATE_WHEN_UNAVAILABLE } from "../../constants/devConfig";
+
+const LIP_LANDMARK_INDICES = [
+  61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291,
+  78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308,
+  191, 80, 81, 82, 13, 312, 311, 310, 415,
+];
 
 /**
  * Holistic.drawHolisticResults와 같은 캔버스 설정(너비·높이=비디오, translate(W,0)·scale(-1,1))일 때
@@ -55,7 +60,46 @@ type PhotoSheet = {
   mode: PhotoPopupMode;
   score?: number;
   errorMessage?: string | null;
+  overlay?: {
+    pose: ([number, number] | null)[];
+    leftHand: ([number, number] | null)[];
+    rightHand: ([number, number] | null)[];
+    lips: { idx: number; point: [number, number] }[];
+    sourceSize: {
+      width: number;
+      height: number;
+    };
+  } | null;
 };
+
+function collectPopupOverlayData(
+  results: Results,
+  videoWidth: number,
+  videoHeight: number
+) {
+  const toPixel = (lm: { x: number; y: number }): [number, number] => {
+    const ux = lm.x * videoWidth;
+    const uy = lm.y * videoHeight;
+    return [Math.round(videoWidth - ux), Math.round(uy)];
+  };
+
+  return {
+    pose: [11, 12, 13, 14].map((idx) =>
+      results.poseLandmarks?.[idx] ? toPixel(results.poseLandmarks[idx]) : null
+    ),
+    leftHand: Array.from({ length: 21 }, (_, i) =>
+      results.leftHandLandmarks?.[i] ? toPixel(results.leftHandLandmarks[i]) : null
+    ),
+    rightHand: Array.from({ length: 21 }, (_, i) =>
+      results.rightHandLandmarks?.[i] ? toPixel(results.rightHandLandmarks[i]) : null
+    ),
+    lips: LIP_LANDMARK_INDICES.flatMap((idx) => {
+      const lm = results.faceLandmarks?.[idx];
+      return lm ? [{ idx, point: toPixel(lm) }] : [];
+    }),
+    sourceSize: { width: videoWidth, height: videoHeight },
+  };
+}
 
 type GamePageProps = {
   dailyPose: DailyPoseData;
@@ -67,9 +111,10 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
     takeScreenshot: () => string | null;
     videoElement?: HTMLVideoElement;
   } | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null!);
   const holisticRef = useRef<ReturnType<typeof InitHolistic> | null>(null);
   const lastDrawDotPixelsRef = useRef<[number, number][] | null>(null);
+  const lastOverlayRef = useRef<PhotoSheet["overlay"]>(null);
   const expectCaptureRef = useRef(false);
   const attemptCountRef = useRef(0);
 
@@ -77,10 +122,6 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
   const [selectedTimer, setSelectedTimer] = useState(3);
   const [photoSheet, setPhotoSheet] = useState<PhotoSheet | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
-
-  const answerImageUrl = dailyPose.publicImage
-    ? resolveImageUrl(dailyPose.publicImage, API_ORIGIN)
-    : null;
 
   useEffect(() => {
     if (!holisticRef.current) {
@@ -95,8 +136,13 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           | undefined;
         const w = video?.videoWidth ?? 0;
         const h = video?.videoHeight ?? 0;
-        lastDrawDotPixelsRef.current =
-          w > 0 && h > 0 ? collectDrawLandmarkCanvasPixels(results, w, h) : null;
+        if (w > 0 && h > 0) {
+          lastDrawDotPixelsRef.current = collectDrawLandmarkCanvasPixels(results, w, h);
+          lastOverlayRef.current = collectPopupOverlayData(results, w, h);
+        } else {
+          lastDrawDotPixelsRef.current = null;
+          lastOverlayRef.current = null;
+        }
       });
     }
 
@@ -151,17 +197,23 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
       }
 
       const landmarks = lastDrawDotPixelsRef.current;
+      const overlay = lastOverlayRef.current;
       if (!landmarks?.length) {
         setPhotoSheet({
           imgSrc: image,
           mode: "fail",
           errorMessage:
             "화면에 찍는 관절 점 좌표를 아직 만들 수 없습니다. 상체와 손이 잘 보이게 다시 촬영해 주세요.",
+          overlay: null,
         });
         return;
       }
 
-      setPhotoSheet({ imgSrc: image, mode: "evaluating" });
+      setPhotoSheet({
+        imgSrc: image,
+        mode: "evaluating",
+        overlay,
+      });
 
       try {
         const result = await ApiService.getInstance().evaluate(
@@ -183,14 +235,39 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           imgSrc: image,
           mode: result.is_passed ? "win" : "fail",
           score: result.score,
+          overlay,
         });
       } catch (e) {
+        if (MOCK_EVALUATE_WHEN_UNAVAILABLE) {
+          const mockScore = Number((Math.random() * 60 + 40).toFixed(1)); // 40.0 ~ 100.0
+          const mockPassed = mockScore >= 85;
+
+          appendEvaluateRecord({
+            daily_id: dailyPose.daily_id,
+            pose_name: dailyPose.pose_name,
+            imgSrc: image,
+            score: mockScore,
+            is_passed: mockPassed,
+            attemptNumber,
+            recordedAt: new Date().toISOString(),
+          });
+
+          setPhotoSheet({
+            imgSrc: image,
+            mode: mockPassed ? "win" : "fail",
+            score: mockScore,
+            overlay,
+          });
+          return;
+        }
+
         const msg =
           e instanceof Error ? e.message : "평가 요청 중 오류가 발생했습니다.";
         setPhotoSheet({
           imgSrc: image,
           mode: "fail",
           errorMessage: msg,
+          overlay,
         });
       }
     },
@@ -230,9 +307,8 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
     setPhotoSheet(null);
   };
 
-  const handleGoHome = () => {
-    setPhotoSheet(null);
-    onExitToMain();
+  const blurAfterMouseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.blur();
   };
 
   return (
@@ -240,26 +316,52 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
       style={{
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         minHeight: "100vh",
         backgroundColor: "#F0F0F0",
-        gap: "30px",
+        gap: "24px",
+        paddingTop: "28px",
+        boxSizing: "border-box",
       }}
     >
-      <p style={{ margin: 0, fontWeight: 600 }}>
-        오늘의 포즈: {dailyPose.pose_name}
-      </p>
+      <div
+        style={{
+          position: "relative",
+          display: "inline-block",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setPhotoSheet({ imgSrc: "", mode: "tutorial" })}
+          onMouseUp={blurAfterMouseClick}
+          style={{
+            position: "absolute",
+            right: "100%",
+            top: "12px",
+            marginRight: "16px",
+            padding: "10px 16px",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          튜토리얼
+        </button>
+        <CameraContainer
+          ref={cameraRef}
+          canvasRef={canvasRef}
+          timer={timer}
+          selectedTimer={selectedTimer}
+          onTimerSelect={setSelectedTimer}
+        />
+      </div>
 
-      <CameraContainer
-        ref={cameraRef}
-        canvasRef={canvasRef}
-        timer={timer}
-        selectedTimer={selectedTimer}
-        onTimerSelect={setSelectedTimer}
-      />
-
-      <button type="button" onClick={startTimer}>
+      <button
+        type="button"
+        onClick={startTimer}
+        onMouseUp={blurAfterMouseClick}
+        style={{ padding: "10px 16px", fontWeight: 600, cursor: "pointer" }}
+      >
         촬영 시작
       </button>
 
@@ -269,10 +371,9 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           mode={photoSheet.mode}
           attemptCount={attemptCount}
           score={photoSheet.score}
-          answerImageUrl={answerImageUrl}
+          overlayData={photoSheet.overlay ?? null}
           errorMessage={photoSheet.errorMessage ?? null}
           onClose={closePhotoPopup}
-          onGoHome={handleGoHome}
         />
       )}
     </div>

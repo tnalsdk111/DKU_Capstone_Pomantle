@@ -23,8 +23,7 @@ const CameraContainer = forwardRef(({ canvasRef, timer, selectedTimer, onTimerSe
   return (
     <div style={{ 
       position: "relative", 
-      width: "55%",
-      minWidth: "640px",
+      width: "clamp(640px, 72vw, 980px)",
       minHeight: "480px", 
       aspectRatio: "4/3",
       backgroundColor: "#FFF", 
