@@ -74,7 +74,8 @@ export class DBManager{
     }
 
     public getID = () => {
-        return dummyData.length;
+        if(dummyData.length === 0) return 0;
+        else return dummyData[dummyData.length-1].id + 1;
     }
 
     public getAllData = (): Data[] => {

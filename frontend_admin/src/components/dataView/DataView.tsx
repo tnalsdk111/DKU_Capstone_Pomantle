@@ -9,9 +9,11 @@ import { PopUpType } from "../../models/PopUpType";
 interface DataCardProps{
     data: Data;
     onCreate?: (id: number) => void;
+    isSelectMode?: boolean; 
+    onSelect?: (data: Data) => void;
 }
 
-const DataView = ({data, onCreate}: DataCardProps) => {
+const DataView = ({data, onCreate, isSelectMode=false, onSelect}: DataCardProps) => {
     const isValidImage = (imgString: string) => {
         if (imgString === "..." || !imgString) return false;
         
@@ -30,7 +32,9 @@ const DataView = ({data, onCreate}: DataCardProps) => {
       <div className="data-item-card">
         <div className="card-header">
           <span className="item-number">#{data.id}</span>
-          <h3 className="item-pose-name" style={{ fontSize: '1.5rem' }}>{data.poseName}</h3>
+          <h3 className="item-pose-name" style={{ fontSize: '1.5rem' }}>poseName : {data.poseName}</h3>
+          <h3 className="item-pose-name" style={{ fontSize: '1.5rem' }}>createdAt : {data.createdAt}</h3>
+          <h3 className="item-pose-name" style={{ fontSize: '1.5rem' }}>usedAt : {data.usedAt}</h3>
         </div>
 
         <div className="item-image-group">
@@ -45,8 +49,14 @@ const DataView = ({data, onCreate}: DataCardProps) => {
         </div>
 
         <div className="card-footer">
-          <CustomButton label="데이터 수정" variant="primary" size="large" onClick={dataEdit}/>
-          <CustomButton label="데이터 삭제" variant="primary" size="large" onClick={dataDelete}/>
+          {isSelectMode? (
+            <CustomButton label="데이터 할당" variant="primary" size="large" onClick={() => onSelect && onSelect(data)}/>
+          ):(
+            <>
+              <CustomButton label="데이터 수정" variant="primary" size="large" onClick={dataEdit}/>
+              <CustomButton label="데이터 삭제" variant="primary" size="large" onClick={dataDelete}/>
+            </>
+          )}
         </div>
       </div>
   );
