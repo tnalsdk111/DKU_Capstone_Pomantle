@@ -7,6 +7,7 @@ import CustomButton from './components/button/CustomButton';
 import { PopUpManager } from './managers/PopUpManager';
 import { DBManager } from './managers/DBManager';
 import { CalendarDataPopUp } from './components/popup/calendatDataPopUp/CalendarDataPopUp';
+import { SelectDataPopUp } from './components/popup/selectDataPopUp/SelectDataPopUp';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<'calendar' | 'data'>('calendar');
@@ -29,6 +30,7 @@ function App() {
       <div>
         <CalendarDataPopUp/>
         <CreateDataPopUp/>
+        <SelectDataPopUp/>
       </div>
     </div>
   );

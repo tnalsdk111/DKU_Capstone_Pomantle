@@ -29,8 +29,8 @@ export const CalendarDataPopUp = () => {
         }
     }
 
-    const GetData = () => {
-
+    const SelectData = () => {
+        PopUpManager.getInstance().openPopUp(PopUpType.SELECTDATA, { date: selectedDate });
     }
 
     const CancelData = () => {
@@ -87,7 +87,7 @@ export const CalendarDataPopUp = () => {
                     {data ? ( 
                         <div className='modal-footer'> 
                             <DataView data={data} /> 
-                            <CustomButton label="데이터 할당" variant="primary" size="large"/>
+                            <CustomButton label="데이터 할당" variant="primary" size="large" onClick={SelectData}/>
                             <CustomButton label="데이터 취소" variant="primary" size="large" onClick={CancelData}/>
                         </div>) 
                         : 
@@ -99,7 +99,7 @@ export const CalendarDataPopUp = () => {
                     <div className='modal-footer'>
                         <CustomButton label='데이터 생성' variant='primary' size='large' onClick={CreateData}/>
                         
-                        <CustomButton label='데이터 할당' variant='primary' size='large' onClick={GetData}/>
+                        <CustomButton label='데이터 할당' variant='primary' size='large' onClick={SelectData}/>
                     </div>)
                 }
             </div>

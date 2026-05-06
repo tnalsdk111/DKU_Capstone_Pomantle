@@ -1,0 +1,36 @@
+/* 팝업 전체 박스 */
+.modal-content.select-data-modal {
+  width: 800px;             /* 필요에 따라 너비 조절 */
+  max-width: 90%;
+  
+  /* 💡 [핵심 1] 팝업의 최대 높이를 화면 높이의 80~85%로 제한 */
+  max-height: 85vh;        
+  
+  display: flex;
+  flex-direction: column;   /* 헤더, 바디, 푸터가 세로로 배치되도록 설정 */
+  overflow: hidden;         /* 전체 팝업 밖으로 내용이 삐져나가지 않게 방어 */
+}
+
+/* 팝업 내부 바디 (그리드가 들어가는 영역) */
+.modal-body.grid-scroll-container {
+  flex-grow: 1;             /* 남는 세로 공간을 가득 채움 */
+  
+  /* 💡 [핵심 2] 내용이 많아지면 세로 스크롤바가 생기도록 설정 */
+  overflow-y: auto;         
+  
+  padding-right: 8px;       /* 스크롤바와 콘텐츠 사이의 미세한 간격 확보 */
+}
+
+/* 스크롤바 스타일링 (선택 사항: 더 깔끔하고 얇은 스크롤바) */
+.modal-body.grid-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body.grid-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.modal-body.grid-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
