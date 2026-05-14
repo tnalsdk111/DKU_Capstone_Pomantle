@@ -5,12 +5,13 @@ import './DataView.css';
 import { PopUpManager } from "../../managers/PopUpManager";
 import { DBManager } from "../../managers/DBManager";
 import { PopUpType } from "../../models/PopUpType";
+import { PoseListItem } from "../../models/ApiTypes";
 
 interface DataCardProps{
-    data: Data;
+    data: PoseListItem;
     onCreate?: (id: number) => void;
     isSelectMode?: boolean; 
-    onSelect?: (data: Data) => void;
+    onSelect?: (data: PoseListItem) => void;
 }
 
 const DataView = ({data, onCreate, isSelectMode=false, onSelect}: DataCardProps) => {

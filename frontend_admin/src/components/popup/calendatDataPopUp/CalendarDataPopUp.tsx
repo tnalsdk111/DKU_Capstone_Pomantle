@@ -7,6 +7,7 @@ import CustomButton from '../../button/CustomButton';
 import './CalendarDataPopUp.css'
 import { PopUpType } from '../../../models/PopUpType';
 import DataView from '../../dataView/DataView';
+import { PoseListItem } from '../../../models/ApiTypes';
 
 interface CalendarDataPopUp extends PopUp{
     showData(date:string): void;
@@ -14,7 +15,7 @@ interface CalendarDataPopUp extends PopUp{
 
 export const CalendarDataPopUp = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [data, setData] = useState<Data | null>();
+    const [data, setData] = useState<PoseListItem | null>();
     const [selectedDate, setSelectedDate] = useState<string>("");
 
     const CreateData = () => {
@@ -35,7 +36,7 @@ export const CalendarDataPopUp = () => {
 
     const CancelData = () => {
         if(!data) return;
-        const dataSave:Data = {
+        const dataSave:PoseListItem = {
             ...data,
             usedAt: "",
         }

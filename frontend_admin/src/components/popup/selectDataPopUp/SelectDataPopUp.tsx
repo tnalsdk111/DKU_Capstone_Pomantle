@@ -6,6 +6,7 @@ import { DBManager } from '../../../managers/DBManager';
 import { PopUpType } from '../../../models/PopUpType';
 import DataView from '../../dataView/DataView';
 import './SelectDataPopUp.css';
+import { CreatePoseRequest, PoseListItem } from '../../../models/ApiTypes';
 
 interface SelectDataPopUp extends PopUp {
     showData(payload: { date: string }): void;
@@ -13,23 +14,23 @@ interface SelectDataPopUp extends PopUp {
 
 export const SelectDataPopUp = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [allData, setAllData] = useState<Data[]>([]);
+    const [allData, setAllData] = useState<PoseListItem[]>([]);
     const [targetDate, setTargetDate] = useState<string>("");
 
-    const handleSelect = (selectedItem: Data) => {
+    const handleSelect = (selectedItem: PoseListItem) => {
         if (!targetDate) return;
         const existData = DBManager.getInstance().getDataByDate(targetDate);
         if(existData && existData.id !== selectedItem.id){
-            const newData:Data = {
+            const newData:CreatePoseRequest = {
                 ...existData,
-                usedAt: ""
+                target_vector: [],
             };
             DBManager.getInstance().updateData(newData);
         }
 
-        const updatedData: Data = {
+        const updatedData: CreatePoseRequest = {
             ...selectedItem,
-            usedAt: targetDate
+            target_vector: [],
         };
         console.log(updatedData);
 

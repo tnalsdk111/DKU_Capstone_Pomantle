@@ -5,6 +5,7 @@ import './DataPage.css';
 import { useEffect, useState } from 'react';
 import { DBManager } from '../../managers/DBManager';
 import { useAllData } from '../../components/useAllData/UseAllData';
+import ApiService from '../../api/ApiService';
 
 // interface RowProps{
 //   index: number;

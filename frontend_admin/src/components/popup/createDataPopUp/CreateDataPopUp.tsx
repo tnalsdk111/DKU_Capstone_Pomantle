@@ -10,6 +10,7 @@ import CustomButton from '../../button/CustomButton';
 import { captureCombinedImage } from './CreateDataPopUpHelper';
 import { Data } from '../../../models/Data';
 import { DBManager } from '../../../managers/DBManager';
+import { CreatePoseRequest } from '../../../models/ApiTypes';
 
 interface CreateDataPopUp extends PopUp{
     showData(date:string): void;
@@ -65,18 +66,13 @@ export const CreateDataPopUp = () => {
     };
 
     const saveAll = () => {
-        const chk = (idRef.current === -1);
-        if(idRef.current === -1) idRef.current = DBManager.getInstance().getID(); 
-        if(todayRef.current !== "" && usedAtRef.current === "") usedAtRef.current = todayRef.current;
+        const chk = true;
 
-        const dataSave:Data = {
-            id: idRef.current,
+        const dataSave:CreatePoseRequest = {
             poseName: poseName,
-            vector: lastResultRef.current,
+            target_vector: lastResultRef.current,
             originalImage: originImg,
             publicImage: publicImg,
-            createdAt: new Date().toISOString(),
-            usedAt: usedAtRef.current,
         }
 
         try{
