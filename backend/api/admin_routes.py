@@ -33,13 +33,28 @@ def get_all_poses():
 def create_pose():
     data = request.get_json()
     try:
+        used_at_str = data.get('usedAt')   #usedAt(YYYY-MM-DD)추출 및 날짜 변환
+        target_date = None
+        if used_at_str:
+            target_date = datetime.strptime(used_at_str, "%Y-%m-%d").date()
+            
         new_pose = Pose(
             pose_name=data['poseName'],
             target_vector=data['target_vector'],  # 평가용: 캔버스 픽셀 [[u,v], ...] JSON 배열
             original_image=data.get('originalImage', ''),
-            public_image=data.get('publicImage', '')
+            public_image=data.get('publicImage', ''),
+            used_at=target_date
         )
         db.session.add(new_pose)
+        db.session.flush()
+        if target_date:
+            existing_daily = DailyPose.query.filter_by(target_date=target_date).first()   #해당 날짜에 이미 포즈 있나 체크
+            if existing_daily:
+                existing_daily.pose_id = new_pose.pose_id   #이미 있다면 새로운 포즈로 덮어쓰기 (수정)
+            else:
+                new_daily = DailyPose(target_date=target_date, pose_id=new_pose.pose_id)
+                db.session.add(new_daily)   #없다면 새로 생성
+
         db.session.commit()
         return jsonify({"status": "success", "message": "포즈가 등록되었습니다."}), 201
     except Exception as e:
