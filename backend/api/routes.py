@@ -52,6 +52,7 @@ def get_daily_pose():
                 "pose_name": pose_info.pose_name,
                 "originalImage": pose_info.original_image,
                 "publicImage": pose_info.public_image,
+                "usedAt": pose_info.used_at.strftime("%Y-%m-%d") if pose_info.used_at else None,
             },
         ),
         200,
