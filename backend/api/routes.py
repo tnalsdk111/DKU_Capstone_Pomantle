@@ -1,8 +1,8 @@
 """
 /api/v1 — 프론트 계약
-- GET   /daily-pose     (DB: 오늘 날짜 DailyPose + Pose)
-- POST  /evaluate       body: { "daily_id": int, "landmarks": [[u,v], ...] }
-- POST  /save-record
+- GET  /daily-pose     (DB: 오늘 날짜 DailyPose + Pose)
+- POST /evaluate       body: { "daily_id": int, "landmarks": [[u,v], ...] }
+- POST /save-record
 
 정답 랜드마크는 poses.target_vector(JSONB)에 캔버스 픽셀 쌍 [[u,v], ...] 로 저장해야 합니다.
 """
