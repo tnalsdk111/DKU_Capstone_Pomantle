@@ -21,9 +21,16 @@ def create_app():
     app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
     app.register_blueprint(admin_bp, url_prefix='/api/v1/admin')
 
+    @app.route('/')
+    def hello():
+        return "포맨틀 백엔드 서버가 정상 작동 중입니다! 🚀", 200
+
+    
     return app
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
+
+

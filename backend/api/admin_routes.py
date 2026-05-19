@@ -20,7 +20,8 @@ def get_all_poses():
             "poseName": pose.pose_name,
             "originalImage": pose.original_image,
             "publicImage": pose.public_image,
-            "createdAt": pose.created_at.strftime("%Y-%m-%d") if pose.created_at else None
+            "createdAt": pose.created_at.strftime("%Y-%m-%d") if pose.created_at else None,
+            "usedAt": pose.used_at.strftime("%Y-%m-%d") if pose.used_at else None
         } for pose in poses]
         
         return jsonify({"status": "success", "data": result}), 200
@@ -81,7 +82,8 @@ def get_daily_poses():
                         "id": pose.pose_id,
                         "poseName": pose.pose_name,
                         "originalImage": pose.original_image,
-                        "publicImage": pose.public_image
+                        "publicImage": pose.public_image,
+                        "usedAt": pose.used_at.strftime("%Y-%m-%d") if pose.used_at else None
                     }
                 })
         return jsonify({"status": "success", "data": result}), 200
@@ -98,6 +100,11 @@ def set_daily_pose():
     try:
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date()
         
+        #먼저 해당 포즈가 실제로 존재하는지 확인하고 used_at 갱신 준비
+        pose = Pose.query.get(pose_id)
+        if not pose:
+            return jsonify({"status": "error", "message": "존재하지 않는 포즈입니다."}), 404
+
         #이미 해당 날짜에 지정된 포즈가 있는지 확인
         existing_daily = DailyPose.query.filter_by(target_date=target_date).first()
         
@@ -111,6 +118,8 @@ def set_daily_pose():
             db.session.add(new_daily)
             message = "해당 날짜에 포즈가 지정되었습니다."
             
+        pose.used_at = target_date
+
         db.session.commit()
         return jsonify({"status": "success", "message": message}), 200
     except Exception as e:
@@ -127,6 +136,10 @@ def delete_daily_pose(date_str):
         if not daily_pose:
             return jsonify({"status": "error", "message": "해당 날짜에 지정된 포즈가 없습니다."}), 404
             
+        pose = Pose.query.get(daily_pose.pose_id)
+        if pose:
+            pose.used_at = None
+                
         db.session.delete(daily_pose)
         db.session.commit()
         return jsonify({"status": "success", "message": "해당 날짜의 포즈 지정이 취소되었습니다."}), 200
