@@ -12,4 +12,4 @@ def save_pose_to_db(pose_name, target_vector, original_image=None, public_image=
     return new_pose
 
 def get_pose_by_id(pose_id):
-    return Pose.query.get(pose_id)
+   return db.session.get(Pose, pose_id)
