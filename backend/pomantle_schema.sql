@@ -5,7 +5,7 @@ CREATE TABLE poses (
     target_vector JSONB NOT NULL,           -- 평가용: 캔버스 픽셀 [[u,v], ...] JSON 배열
     original_image TEXT,            -- 어드민 원본 이미지(base64 위한 text타입)
     public_image TEXT,              -- 사용자용 공개 이미지(base64 위한 text타입)
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc') -- 생성 시간
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'), -- 생성 시간
     used_at DATE                            -- 포즈가 사용된 날짜 (nullable=True)
 );
 
