@@ -1,6 +1,6 @@
 import { Data } from "../models/Data";
 import ApiService from "../api/ApiService";
-import { CreatePoseRequest, PoseListItem } from "../models/ApiTypes";
+import { PoseData } from "../models/ApiTypes";
 
 // let dummyData: Data[] = [ // 샘플링용 데이터
 //   { id: 0, poseName: "사과", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-3" },
@@ -13,7 +13,7 @@ import { CreatePoseRequest, PoseListItem } from "../models/ApiTypes";
 
 export class DBManager{
     private static instance: DBManager;
-    private dataList: PoseListItem[] = [];
+    private dataList: PoseData[] = [];
     private listeners: (() => void)[] = [];
 
     subscribe(listeners: () => void){
@@ -41,34 +41,36 @@ export class DBManager{
             const freshData = await ApiService.getInstance().getPoses();
             this.dataList = freshData;
             this.notify();
+            console.log("데이터 동기화 성공");
         } catch (error){
             console.log("데이터 동기화 실패: ", error);
             throw error;
         }
     }
 
-    public getAllData = (): PoseListItem[] => { // 모든 데이터 가져오기
+    public getAllData = (): PoseData[] => { // 모든 데이터 가져오기
         return this.dataList;
         //return [...dummyData];
     }
 
-    public getData = (id: number): PoseListItem | null => { // id를 통해 특정 데이터 가져오기
+    public getData = (id: number): PoseData | null => { // id를 통해 특정 데이터 가져오기
         return this.dataList.find(item => item.id === id) || null;
         // return (dummyData.find(item => item.id === id)) || null;
     }
 
-    public getDataByDate = (date: string): PoseListItem | null =>{ // 날짜를 통해 특정 데이터 가져오기
+    public getDataByDate = (date: string): PoseData | null =>{ // 날짜를 통해 특정 데이터 가져오기
         return this.dataList.find(item => item.usedAt === date) || null;
         // return (dummyData.find(item => item.usedAt === date)) || null;
     }
 
-    public async addData(data: CreatePoseRequest): Promise<boolean>{ // 데이터 추가하기
+    public async addData(data: PoseData): Promise<boolean>{ // 데이터 추가하기
         // const isExist = dummyData.some(item => item.id === data.id);
         //if(isExist) return false;
 
         //dummyData.push(data);
 
         try{
+            console.log(data);
             await ApiService.getInstance().createPose(data);
             await this.refreshData(); // 등록 후 전체 목록 새로고침
             return true;
@@ -89,7 +91,7 @@ export class DBManager{
         // dummyData.splice(index, 1);
         try {
             await ApiService.getInstance().deletePose(id);
-            this.dataList = this.dataList.filter(item => item.id !== id);
+            await this.refreshData();
             this.notify();
             return true;
         } catch (error) {
@@ -122,7 +124,7 @@ export class DBManager{
         }
     }
 
-    public updateData = (data: CreatePoseRequest): boolean => { // 기존 데이터 수정하기
+    public updateData = (data: PoseData): boolean => { // 기존 데이터 수정하기
         // const index = dummyData.findIndex(item => item.id === data.id);
         //if(index == -1) return false;
 

@@ -3,9 +3,9 @@ import { API_BASE_URL } from "../constants/ApiConfig";
 import type {
   ApiErrorEnvelope,
   ApiSuccessEnvelope,
-  CreatePoseRequest,
-  PoseListItem,
+  PoseData,
 } from "../models/ApiTypes";
+import { ApiAdapter } from "./ApiAdapter";
 
 function isApiErrorBody(x: unknown): x is ApiErrorEnvelope {
   return (
@@ -25,9 +25,9 @@ class ApiService {
     return ApiService.instance;
   }
 
-  async getPoses(): Promise<PoseListItem[]> { // 모든 데이터 가져오기
+  async getPoses(): Promise<PoseData[]> { // 모든 데이터 가져오기
     try{ // /poses에 접근
-        const response = await axios.get<ApiSuccessEnvelope<PoseListItem[]> | ApiErrorEnvelope>(`${API_BASE_URL}/poses`);
+        const response = await axios.get<ApiSuccessEnvelope<PoseData[]> | ApiErrorEnvelope>(`${API_BASE_URL}/poses`);
         const body = response.data; // 접근해서 받아온 데이터
 
         if(body.status === "success") return body.data; // 성공이면 그대로 반환
@@ -43,12 +43,17 @@ class ApiService {
     }
   }
 
-  async createPose(poseData: CreatePoseRequest): Promise<void> { // 데이터 생성
+  async createPose(rawData: PoseData): Promise<void> { // 데이터 생성
+    console.log(rawData);
     try{
+        const payload = ApiAdapter.toCreatePosePayLoad(rawData);
+        console.log('payload : ', payload);
+
         const response = await axios.post<ApiSuccessEnvelope<null> | ApiErrorEnvelope>( // 데이터 보내기
             `${API_BASE_URL}/poses`,
-            poseData
+            payload
         );
+        console.log(response);
 
         const body = response.data; // 데이터 보내고나서 온 응답
 
@@ -61,6 +66,7 @@ class ApiService {
             isApiErrorBody(body) ? body.message : "포즈 등록에 실패했습니다."
         );
     } catch (e){
+      console.log(e);
         if(axios.isAxiosError(e)){
             const serverMessage = e.response?.data?.message;
             throw new Error(serverMessage || "서버 통신 중 오류가 발생했습니다.");
@@ -93,9 +99,9 @@ class ApiService {
     }
   }
 
-  async getDailyPoseByData(date: string): Promise<PoseListItem> { // 특정 날짜의 데이터 가져오기
+  async getDailyPoseByData(date: string): Promise<PoseData> { // 특정 날짜의 데이터 가져오기
     try{
-        const response = await axios.get<ApiSuccessEnvelope<PoseListItem> | ApiErrorEnvelope>(
+        const response = await axios.get<ApiSuccessEnvelope<PoseData> | ApiErrorEnvelope>(
             `${API_BASE_URL}/daily-poses`,
             { params: { date } } // ?date=yyyy-mm-dd 형태로 전달
         );

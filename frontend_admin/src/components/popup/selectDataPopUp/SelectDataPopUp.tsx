@@ -6,7 +6,7 @@ import { DBManager } from '../../../managers/DBManager';
 import { PopUpType } from '../../../models/PopUpType';
 import DataView from '../../dataView/DataView';
 import './SelectDataPopUp.css';
-import { CreatePoseRequest, PoseListItem } from '../../../models/ApiTypes';
+import { PoseData } from '../../../models/ApiTypes';
 
 interface SelectDataPopUp extends PopUp {
     showData(payload: { date: string }): void;
@@ -14,29 +14,36 @@ interface SelectDataPopUp extends PopUp {
 
 export const SelectDataPopUp = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [allData, setAllData] = useState<PoseListItem[]>([]);
+    const [allData, setAllData] = useState<PoseData[]>([]);
     const [targetDate, setTargetDate] = useState<string>("");
 
-    const handleSelect = (selectedItem: PoseListItem) => {
+    const handleSelect = async (selectedItem: PoseData) => {
         if (!targetDate) return;
-        const existData = DBManager.getInstance().getDataByDate(targetDate);
-        if(existData && existData.id !== selectedItem.id){
-            const newData:CreatePoseRequest = {
-                ...existData,
-                target_vector: [],
+
+        try{
+            const existData = DBManager.getInstance().getDataByDate(targetDate); // 해당 날짜의 데이터를 가져와서
+            if(existData && existData.id !== selectedItem.id){ // 해당 데이터가 존재하고, 내가 바꾸려는 데이터와 다르다면
+                const newData:PoseData = { // 해당 데이터
+                    ...existData,
+                    usedAt: ""
+                };
+                await DBManager.getInstance().updateData(newData); // 새로 업데이트
+            }
+
+            const updatedData: PoseData = {
+                ...selectedItem,
             };
-            DBManager.getInstance().updateData(newData);
+            console.log(updatedData);
+
+            await DBManager.getInstance().updateData(updatedData);
+
+            const freshAllData = DBManager.getInstance().getAllData();
+            setAllData(freshAllData);
+            
+            initPopUp.close();
+        } catch(error){
+            console.log("팝업 데이터 배정 중 오류 발생: ", error);
         }
-
-        const updatedData: CreatePoseRequest = {
-            ...selectedItem,
-            target_vector: [],
-        };
-        console.log(updatedData);
-
-        DBManager.getInstance().updateData(updatedData);
-        
-        initPopUp.close();
     };
 
     const initPopUp: SelectDataPopUp = {
