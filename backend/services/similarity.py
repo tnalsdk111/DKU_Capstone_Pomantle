@@ -1,46 +1,29 @@
 """
-캔버스 픽셀 좌표 [[u, v], ...] 기준 유사도.
-정답 템플릿은 플레이스홀더(추후 DB·관리자 입력으로 교체 가능).
+부위별 랜드마크 JSON(dict) 기준 유사도.
+{ "pose": [[u,v],...], "leftHand": ..., "rightHand": ..., "lips": ... }
 """
 
 from __future__ import annotations
 
 import math
-from typing import List, Sequence, Tuple
+from typing import Dict, List, Mapping, Sequence, Tuple
 
 PASS_THRESHOLD = 85.0
 
-
-def _gen_hand_cluster(cx: float, cy: float, radius: float = 38.0) -> List[List[float]]:
-    pts: List[List[float]] = []
-    for i in range(21):
-        ang = 2 * math.pi * i / 21.0
-        pts.append(
-            [
-                cx + radius * math.cos(ang),
-                cy + radius * math.sin(ang) * 0.55,
-            ]
-        )
-    return pts
-
-
-def default_reference_pixel_landmarks() -> List[List[float]]:
-    """
-    프론트 drawLandmarks 순서와 동일: 포즈 4점 → 왼손 21 → 오른손 21 (총 46).
-    1280x720 캔버스 가정의 대략적 T자 형태 플레이스홀더.
-    """
-    W, H = 1280.0, 720.0
-    ref: List[List[float]] = []
-    ref.append([0.42 * W, 0.26 * H])
-    ref.append([0.58 * W, 0.26 * H])
-    ref.append([0.38 * W, 0.42 * H])
-    ref.append([0.62 * W, 0.42 * H])
-    ref.extend(_gen_hand_cluster(0.38 * W, 0.42 * H))
-    ref.extend(_gen_hand_cluster(0.62 * W, 0.42 * H))
-    return ref
+LANDMARK_KEYS = ("pose", "leftHand", "rightHand")
+LandmarkGroups = Dict[str, List[List[float]]]
 
 
 def _normalize_points(pts: Sequence[Sequence[float]]) -> List[List[float]]:
+    """
+    - 위치 보정 (중심 맞추기): 모든 좌표의 평균값(무게중심 cx, cy)을 구해 각 좌표에서 뺀다.
+      이렇게 하면 유저가 화면 왼쪽에서 포즈를 취하든 오른쪽에서 취하든, 모든 포즈의 중심이 (0, 0)으로 이동합니다.
+
+    - 크기 보정 (스케일 맞추기): 중심이 맞춰진 좌표들의 거리 총합(벡터의 크기)을 구해 전체 좌표를 그 크기로 나눈다.
+      이 과정을 거치면 유저가 카메라에 가까이 서서 스켈레톤이 크게 나오든, 멀리 서서 작게 나오든 동일한 크기로 변환된다.
+
+    - + 1e-9는 분모가 0이 되어 프로그램이 멈추는 것(ZeroDivisionError)을 방지하는 안전장치이다.
+    """
     n = len(pts)
     if n < 2:
         return []
@@ -51,13 +34,16 @@ def _normalize_points(pts: Sequence[Sequence[float]]) -> List[List[float]]:
     return [[t[0] / s, t[1] / s] for t in centered]
 
 
-def score_pixel_landmarks(
+def _score_point_lists(
     user: Sequence[Sequence[float]],
     reference: Sequence[Sequence[float]],
 ) -> float:
     """
-    길이가 다르면 앞에서부터 min(len)만 비교(프론트에서 손이 빠질 수 있음).
-    반환: 0~100 근사 일치율.
+    데이터 개수 맞추기: 유저와 정답의 랜드마크 개수 중 더 적은 쪽(min)에 맞춰 유효한 범위만큼만 비교한다.
+
+    정규화 적용: 위에서 설명한 _normalize_points를 거쳐 두 포즈의 위치와 크기를 완벽히 일치시킨다다.
+
+    오차 계산 (RMSE): 정규화된 유저 좌표와 정답 좌표 사이의 거리 오차 제곱합(SSE)을 구한 뒤 평균을 내고 루트를 씌워 평균 오차(RMSE)를 구합니다.
     """
     n = min(len(user), len(reference))
     if n < 2:
@@ -66,16 +52,35 @@ def score_pixel_landmarks(
     r = _normalize_points([reference[i] for i in range(n)])
     sse = sum((u[i][0] - r[i][0]) ** 2 + (u[i][1] - r[i][1]) ** 2 for i in range(n))
     rmse = math.sqrt(sse / n)
-    raw = max(0.0, 100.0 - rmse * 120.0)
+    raw = max(0.0, 100.0 - rmse * 120.0) # 오차가 0.125면 85점
     return min(100.0, round(raw, 1))
 
 
+def score_landmark_groups(
+    user: Mapping[str, Sequence[Sequence[float]]],
+    reference: Mapping[str, Sequence[Sequence[float]]],
+) -> float:
+    """
+    양쪽에 모두 존재하는 부위만 비교해 평균 점수를 반환한다.
+    한쪽에만 있는 부위(null로 빠진 부위)는 건너뛴다.
+    """
+    part_scores: List[float] = []
+    for key in LANDMARK_KEYS:
+        user_pts = user.get(key)
+        ref_pts = reference.get(key)
+        if not user_pts or not ref_pts:
+            continue
+        part_scores.append(_score_point_lists(user_pts, ref_pts))
+
+    if not part_scores:
+        return 0.0
+    return min(100.0, round(sum(part_scores) / len(LANDMARK_KEYS), 1))
+
+
 def evaluate_against_reference(
-    user: Sequence[Sequence[float]],
-    reference: Sequence[Sequence[float]],
+    user: LandmarkGroups,
+    reference: LandmarkGroups,
 ) -> Tuple[float, bool]:
-    print(f"Evaluating user landmarks: {user}")
-    print(f"Reference landmarks: {reference}")
-    score = score_pixel_landmarks(user, reference)
+    score = score_landmark_groups(user, reference)
     passed = score >= PASS_THRESHOLD
     return score, passed
