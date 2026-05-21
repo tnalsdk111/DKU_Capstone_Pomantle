@@ -4,11 +4,9 @@ import type {
   ApiErrorEnvelope,
   ApiSuccessEnvelope,
   DailyPoseData,
+  EvaluateLandmarksPayload,
   EvaluateResultData,
 } from "../models/ApiTypes";
-
-/** 평가 요청: 캔버스에 찍힌 점의 픽셀 좌표 [가로, 세로] (API 예시의 x,y,z 객체는 사용하지 않음) */
-export type LandmarkPixelPair = readonly [number, number];
 
 function isApiErrorBody(x: unknown): x is ApiErrorEnvelope {
   return (
@@ -42,8 +40,9 @@ class ApiService {
 
   async evaluate(
     dailyId: number,
-    landmarks: ReadonlyArray<LandmarkPixelPair>
+    landmarks: EvaluateLandmarksPayload
   ): Promise<EvaluateResultData> {
+    console.log("API 요청 - dailyId:", dailyId, "landmarks:", landmarks);
     try {
       const response = await axios.post<
         ApiSuccessEnvelope<EvaluateResultData> | ApiErrorEnvelope

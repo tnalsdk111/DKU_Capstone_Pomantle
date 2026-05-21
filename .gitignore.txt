@@ -3,7 +3,7 @@ venv/
 env/
 
 # 파이썬 캐시 파일
-__pycache__/
+**/__pycache__/
 *.pyc
 
 # 환경변수 및 비밀번호 (아직임)

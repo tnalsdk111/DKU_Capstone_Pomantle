@@ -74,6 +74,8 @@ def evaluate_against_reference(
     user: Sequence[Sequence[float]],
     reference: Sequence[Sequence[float]],
 ) -> Tuple[float, bool]:
+    print(f"Evaluating user landmarks: {user}")
+    print(f"Reference landmarks: {reference}")
     score = score_pixel_landmarks(user, reference)
     passed = score >= PASS_THRESHOLD
     return score, passed

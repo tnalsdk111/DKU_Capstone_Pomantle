@@ -4,8 +4,13 @@ import json
 
 BASE_URL = "http://127.0.0.1:5000/api/v1"
 
-# 평가 API는 캔버스 픽셀 쌍 [[u,v], ...] — DB target_vector도 동일 형식이어야 함
-dummy_pixel_landmarks = [[100.0 + i * 2.0, 200.0 + i * 1.5] for i in range(24)]
+# 평가 API / DB target_vector: 부위별 딕셔너리 (실패 부위는 null)
+dummy_pixel_landmarks = {
+    "pose": [[100.0 + i * 2.0, 200.0 + i * 1.5] for i in range(4)],
+    "leftHand": [[120.0 + i * 2.0, 220.0 + i * 1.5] for i in range(21)],
+    "rightHand": [[180.0 + i * 2.0, 240.0 + i * 1.5] for i in range(21)],
+    "lips": None,
+}
 
 
 def print_response(title, response):
