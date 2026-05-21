@@ -7,6 +7,16 @@ export interface DailyPoseData {
   publicImage: string;
 }
 
+/** POST /evaluate 요청 landmarks (부위별, 실패 시 null) */
+export type LandmarkPoint = [number, number];
+
+export interface EvaluateLandmarksPayload {
+  pose: LandmarkPoint[] | null;
+  leftHand: LandmarkPoint[] | null;
+  rightHand: LandmarkPoint[] | null;
+  lips: LandmarkPoint[] | null;
+}
+
 /** POST /evaluate 성공 시 data 필드 */
 export interface EvaluateResultData {
   score: number;

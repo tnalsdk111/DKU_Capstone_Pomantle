@@ -1,10 +1,10 @@
 """
 /api/v1 — 프론트 계약
 - GET  /daily-pose     (DB: 오늘 날짜 DailyPose + Pose)
-- POST /evaluate       body: { "daily_id": int, "landmarks": [[u,v], ...] }
+- POST /evaluate       body: { "daily_id": int, "landmarks": { "pose": [[u,v],...]|null, ... } }
 - POST /save-record
 
-정답 랜드마크는 poses.target_vector(JSONB)에 캔버스 픽셀 쌍 [[u,v], ...] 로 저장해야 합니다.
+정답 랜드마크는 poses.target_vector(JSONB)에 평가 요청과 같은 부위별 딕셔너리로 저장해야 합니다.
 """
 
 from __future__ import annotations
@@ -99,15 +99,17 @@ def evaluate_pose():
             404,
         )
 
-    landmarks = dataProcessing.parse_pixel_landmarks(player_landmarks)
-    if landmarks is None:
+    landmark_groups = dataProcessing.parse_pixel_landmarks(player_landmarks)
+    user_landmarks = dataProcessing.flatten_landmark_groups(landmark_groups)
+    if user_landmarks is None:
         return (
             jsonify(status="error", message="필수 데이터가 누락되었습니다."),
             400,
         )
 
-    ref = dataProcessing.parse_pixel_landmarks(target_pose.target_vector)
-    if ref is None:
+    ref_groups = dataProcessing.parse_pixel_landmarks(target_pose.target_vector)
+    ref_landmarks = dataProcessing.flatten_landmark_groups(ref_groups)
+    if ref_landmarks is None:
         return (
             jsonify(
                 status="error",
@@ -117,7 +119,9 @@ def evaluate_pose():
         )
 
     try:
-        score, is_passed = similarity.evaluate_against_reference(landmarks, ref)
+        score, is_passed = similarity.evaluate_against_reference(
+            user_landmarks, ref_landmarks
+        )
     except Exception:
         return (
             jsonify(

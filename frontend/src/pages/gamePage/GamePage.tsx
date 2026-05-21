@@ -4,8 +4,12 @@ import type { Results } from "@mediapipe/holistic";
 import { InitHolistic, drawHolisticResults } from "../../components/holistic/Holistic";
 import PhotoPopup, { PhotoPopupMode } from "../../components/popups/PhotoPopUp";
 import CameraContainer from "../../components/camera/Camera";
+import RecordPage from "../recordPage/RecordPage";
 import ApiService from "../../api/ApiService";
-import type { DailyPoseData } from "../../models/ApiTypes";
+import type {
+  DailyPoseData,
+  EvaluateLandmarksPayload,
+} from "../../models/ApiTypes";
 import {
   appendEvaluateRecord,
 } from "../../utils/gameLocalStorage";
@@ -17,42 +21,75 @@ const LIP_LANDMARK_INDICES = [
   191, 80, 81, 82, 13, 312, 311, 310, 415,
 ];
 
-/**
- * Holistic.drawHolisticResults와 같은 캔버스 설정(너비·높이=비디오, translate(W,0)·scale(-1,1))일 때
- * drawLandmarks로 찍는 점의 캔버스 픽셀 [가로, 세로].
- * 순서: pose 11~14 → 왼손 전체 → 오른손 전체 (Holistic.tsx drawLandmarks 호출과 동일)
- */
-function collectDrawLandmarkCanvasPixels(
+const POSE_LANDMARK_INDICES = [11, 12, 13, 14] as const;
+const HAND_LANDMARK_COUNT = 21;
+
+function toMirroredCanvasPixel(
+  lm: { x: number; y: number },
+  videoWidth: number,
+  videoHeight: number
+): [number, number] {
+  const ux = lm.x * videoWidth;
+  const uy = lm.y * videoHeight;
+  return [Math.round(videoWidth - ux), Math.round(uy)];
+}
+
+/** 평가 API용 부위별 랜드마크. 해당 부위 인식 실패 시 null */
+function collectEvaluateLandmarks(
   results: Results,
   videoWidth: number,
   videoHeight: number
-): [number, number][] {
-  const out: [number, number][] = [];
-  const push = (lm: { x: number; y: number }) => {
-    const ux = lm.x * videoWidth;
-    const uy = lm.y * videoHeight;
-    out.push([Math.round(videoWidth - ux), Math.round(uy)]);
+): EvaluateLandmarksPayload {
+  const toPixel = (lm: { x: number; y: number }) =>
+    toMirroredCanvasPixel(lm, videoWidth, videoHeight);
+
+  const posePoints = POSE_LANDMARK_INDICES.map((idx) => {
+    const lm = results.poseLandmarks?.[idx];
+    return lm ? toPixel(lm) : null;
+  });
+  const pose =
+    posePoints.every((p): p is [number, number] => p !== null)
+      ? posePoints
+      : null;
+
+  const collectHand = (
+    hand: Results["leftHandLandmarks"]
+  ): [number, number][] | null => {
+    if (!hand?.length) return null;
+    const points = Array.from({ length: HAND_LANDMARK_COUNT }, (_, i) => {
+      const lm = hand[i];
+      return lm ? toPixel(lm) : null;
+    });
+    return points.every((p): p is [number, number] => p !== null)
+      ? points
+      : null;
   };
 
-  const pose = results.poseLandmarks;
-  if (pose && pose.length >= 15) {
-    for (let i = 11; i <= 14; i++) {
-      push(pose[i]);
-    }
-  }
+  const lipPoints = LIP_LANDMARK_INDICES.map((idx) => {
+    const lm = results.faceLandmarks?.[idx];
+    return lm ? toPixel(lm) : null;
+  });
+  const lips =
+    lipPoints.every((p): p is [number, number] => p !== null)
+      ? lipPoints
+      : null;
 
-  if (results.leftHandLandmarks?.length) {
-    for (const lm of results.leftHandLandmarks) {
-      push(lm);
-    }
-  }
-  if (results.rightHandLandmarks?.length) {
-    for (const lm of results.rightHandLandmarks) {
-      push(lm);
-    }
-  }
+  return {
+    pose,
+    leftHand: collectHand(results.leftHandLandmarks),
+    rightHand: collectHand(results.rightHandLandmarks),
+    lips,
+  };
+}
 
-  return out;
+function hasEvaluableLandmarks(landmarks: EvaluateLandmarksPayload | null): boolean {
+  if (!landmarks) return false;
+  return (
+    landmarks.pose !== null ||
+    landmarks.leftHand !== null ||
+    landmarks.rightHand !== null ||
+    landmarks.lips !== null
+  );
 }
 
 type PhotoSheet = {
@@ -77,20 +114,17 @@ function collectPopupOverlayData(
   videoWidth: number,
   videoHeight: number
 ) {
-  const toPixel = (lm: { x: number; y: number }): [number, number] => {
-    const ux = lm.x * videoWidth;
-    const uy = lm.y * videoHeight;
-    return [Math.round(videoWidth - ux), Math.round(uy)];
-  };
+  const toPixel = (lm: { x: number; y: number }) =>
+    toMirroredCanvasPixel(lm, videoWidth, videoHeight);
 
   return {
-    pose: [11, 12, 13, 14].map((idx) =>
+    pose: POSE_LANDMARK_INDICES.map((idx) =>
       results.poseLandmarks?.[idx] ? toPixel(results.poseLandmarks[idx]) : null
     ),
-    leftHand: Array.from({ length: 21 }, (_, i) =>
+    leftHand: Array.from({ length: HAND_LANDMARK_COUNT }, (_, i) =>
       results.leftHandLandmarks?.[i] ? toPixel(results.leftHandLandmarks[i]) : null
     ),
-    rightHand: Array.from({ length: 21 }, (_, i) =>
+    rightHand: Array.from({ length: HAND_LANDMARK_COUNT }, (_, i) =>
       results.rightHandLandmarks?.[i] ? toPixel(results.rightHandLandmarks[i]) : null
     ),
     lips: LIP_LANDMARK_INDICES.flatMap((idx) => {
@@ -113,7 +147,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
   } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null!);
   const holisticRef = useRef<ReturnType<typeof InitHolistic> | null>(null);
-  const lastDrawDotPixelsRef = useRef<[number, number][] | null>(null);
+  const lastLandmarksRef = useRef<EvaluateLandmarksPayload | null>(null);
   const lastOverlayRef = useRef<PhotoSheet["overlay"]>(null);
   const expectCaptureRef = useRef(false);
   const attemptCountRef = useRef(0);
@@ -122,6 +156,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
   const [selectedTimer, setSelectedTimer] = useState(3);
   const [photoSheet, setPhotoSheet] = useState<PhotoSheet | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
+  const [view, setView] = useState<"game" | "records">("game");
 
   useEffect(() => {
     if (!holisticRef.current) {
@@ -137,10 +172,10 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
         const w = video?.videoWidth ?? 0;
         const h = video?.videoHeight ?? 0;
         if (w > 0 && h > 0) {
-          lastDrawDotPixelsRef.current = collectDrawLandmarkCanvasPixels(results, w, h);
+          lastLandmarksRef.current = collectEvaluateLandmarks(results, w, h);
           lastOverlayRef.current = collectPopupOverlayData(results, w, h);
         } else {
-          lastDrawDotPixelsRef.current = null;
+          lastLandmarksRef.current = null;
           lastOverlayRef.current = null;
         }
       });
@@ -196,14 +231,14 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
         return;
       }
 
-      const landmarks = lastDrawDotPixelsRef.current;
+      const landmarks = lastLandmarksRef.current;
       const overlay = lastOverlayRef.current;
-      if (!landmarks?.length) {
+      if (!landmarks || !hasEvaluableLandmarks(landmarks)) {
         setPhotoSheet({
           imgSrc: image,
           mode: "fail",
           errorMessage:
-            "화면에 찍는 관절 점 좌표를 아직 만들 수 없습니다. 상체와 손이 잘 보이게 다시 촬영해 주세요.",
+            "인식된 관절이 없습니다. 상체와 손이 잘 보이게 다시 촬영해 주세요.",
           overlay: null,
         });
         return;
@@ -311,6 +346,15 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
     e.currentTarget.blur();
   };
 
+  if (view === "records") {
+    return (
+      <RecordPage
+        dailyId={dailyPose.daily_id}
+        onBack={() => setView("game")}
+      />
+    );
+  }
+
   return (
     <div
       style={{
@@ -346,6 +390,22 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           }}
         >
           튜토리얼
+        </button>
+        <button
+          type="button"
+          onClick={() => setView("records")}
+          onMouseUp={blurAfterMouseClick}
+          style={{
+            position: "absolute",
+            left: "100%",
+            top: "12px",
+            marginLeft: "16px",
+            padding: "10px 16px",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          기록
         </button>
         <CameraContainer
           ref={cameraRef}
