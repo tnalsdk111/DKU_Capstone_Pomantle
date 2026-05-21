@@ -42,6 +42,7 @@ class ApiService {
     dailyId: number,
     landmarks: EvaluateLandmarksPayload
   ): Promise<EvaluateResultData> {
+    console.log("API 요청 - dailyId:", dailyId, "landmarks:", landmarks);
     try {
       const response = await axios.post<
         ApiSuccessEnvelope<EvaluateResultData> | ApiErrorEnvelope
