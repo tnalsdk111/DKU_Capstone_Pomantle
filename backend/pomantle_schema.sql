@@ -3,9 +3,10 @@ CREATE TABLE poses (
     pose_id BIGSERIAL PRIMARY KEY,           -- 자동 증가하는 큰 정수형 ID
     pose_name VARCHAR(100) NOT NULL,        -- 포즈 이름
     target_vector JSONB NOT NULL,           -- 평가용: 캔버스 픽셀 [[u,v], ...] JSON 배열
-    original_image VARCHAR(255),            -- 어드민 원본 이미지 경로
-    public_image VARCHAR(255),              -- 사용자용 공개 이미지 경로
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc') -- 생성 시간
+    original_image TEXT,            -- 어드민 원본 이미지(base64 위한 text타입)
+    public_image TEXT,              -- 사용자용 공개 이미지(base64 위한 text타입)
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'), -- 생성 시간
+    used_at DATE                            -- 포즈가 사용된 날짜 (nullable=True)
 );
 
 -- 2. DailyPose 테이블 생성 (날짜별 오늘의 포즈 지정)
