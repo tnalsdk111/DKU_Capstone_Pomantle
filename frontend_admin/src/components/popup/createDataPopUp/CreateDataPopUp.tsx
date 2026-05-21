@@ -84,7 +84,7 @@ export const CreateDataPopUp = () => {
     };
 
     const saveAll = async () => {
-        const chk = true;
+        const chk = !originImg;
 
         const dataSave:PoseData = {
             id: 0,
@@ -98,7 +98,14 @@ export const CreateDataPopUp = () => {
 
         try{
             console.log("저장할 데이터: ", dataSave);
-            await DBManager.getInstance().addData(dataSave);
+            if(chk){
+                await DBManager.getInstance().deleteData(idRef.current);
+                await DBManager.getInstance().addData(dataSave);
+            }
+            else{
+                await DBManager.getInstance().addData(dataSave);
+            }
+            
         } catch(error){
             console.error("저장 실패: ", error);
         }
