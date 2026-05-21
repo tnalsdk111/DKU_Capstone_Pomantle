@@ -8,8 +8,8 @@ import { InitHolistic, drawHolisticResults } from "../../holistic/Holistic";
 import './CreateDataPopUp.css'
 import CustomButton from '../../button/CustomButton';
 import { captureCombinedImage } from './CreateDataPopUpHelper';
-import { Data } from '../../../models/Data';
 import { DBManager } from '../../../managers/DBManager';
+import { PoseData } from '../../../models/ApiTypes';
 
 interface CreateDataPopUp extends PopUp{
     showData(date:string): void;
@@ -29,6 +29,7 @@ export const CreateDataPopUp = () => {
 
     const [originImg, setOriginImg] = useState<string>(""); // 원본 이미지
     const [publicImg, setPublicImg] = useState<string>(""); // 공개 이미지
+    const [poseVector, setPoseVector] = useState<any>(null);
     const [poseName, setPoseName] = useState<string>("");
     const [timer, setTimer] = useState<number>(0);
     
@@ -37,6 +38,7 @@ export const CreateDataPopUp = () => {
     const resetAllStates = () => {
         setOriginImg("");
         setPublicImg("");
+        setPoseVector(null);
         setTimer(0);
         setPoseName("");
         idRef.current = -1;
@@ -54,39 +56,49 @@ export const CreateDataPopUp = () => {
         setTimer(seconds);
     };
 
-    const handleCapture = () => {
-        const images = captureCombinedImage(webcamRef, dataCanvasRef, lastResultRef.current);
+    const handleCapture = async () => {
+        const video = webcamRef.current?.video;
+        const drawingCanvas = dataCanvasRef.current;
+
+        if (!video || !drawingCanvas) {
+            alert("웹캠 화면이나 드로잉 캔버스가 아직 준비되지 않았습니다.");
+            return;
+        }
+
+        try{
+            //  await holisticRef.current.send({ image: video });
+            const capturedVector = lastResultRef.current;
+            console.log(capturedVector);
+
+            const images = captureCombinedImage(video, drawingCanvas, capturedVector);
         
-        if(images){
-            const { originImage, publicImage } = images;
-            if(originImage !== "data:,") setOriginImg(originImage);
-            if(publicImage !== "data:,") setPublicImg(publicImage);
+            if(images){
+                const { originImage, publicImage } = images;
+                if(originImage !== "data:,") setOriginImg(originImage);
+                if(publicImage !== "data:,") setPublicImg(publicImage);
+                if(capturedVector) setPoseVector(capturedVector);
+            }
+        } catch(e){
+            console.log("사진 촬영 중 오류 발생 : ", e);
         }
     };
 
-    const saveAll = () => {
-        const chk = (idRef.current === -1);
-        if(idRef.current === -1) idRef.current = DBManager.getInstance().getID(); 
-        if(todayRef.current !== "" && usedAtRef.current === "") usedAtRef.current = todayRef.current;
+    const saveAll = async () => {
+        const chk = true;
 
-        const dataSave:Data = {
-            id: idRef.current,
+        const dataSave:PoseData = {
+            id: 0,
             poseName: poseName,
-            vector: lastResultRef.current,
             originalImage: originImg,
             publicImage: publicImg,
-            createdAt: new Date().toISOString(),
-            usedAt: usedAtRef.current,
+            target_vector: poseVector,
+            createdAt: "",
+            usedAt: todayRef.current
         }
 
         try{
             console.log("저장할 데이터: ", dataSave);
-            if(!chk){
-                DBManager.getInstance().updateData(dataSave);
-            }
-            else{
-                DBManager.getInstance().addData(dataSave);
-            }
+            await DBManager.getInstance().addData(dataSave);
         } catch(error){
             console.error("저장 실패: ", error);
         }
@@ -119,6 +131,7 @@ export const CreateDataPopUp = () => {
             if(data.poseName) setPoseName(data.poseName);
             if(data.originalImage) setOriginImg(data.originalImage);
             if(data.publicImage) setPublicImg(data.publicImage);
+            if(data.target_vector) setPoseVector(data.target_vector);
             if(data.id != null) idRef.current = data.id;
             if(data.usedAt) usedAtRef.current = data.usedAt;
             if(data.today) todayRef.current = data.today;
@@ -130,6 +143,7 @@ export const CreateDataPopUp = () => {
         if(!isVisible) return;
         
         const handleMediaPipeResults = (results: any) => {
+
             lastResultRef.current = results;
 
             const video = webcamRef.current?.video;

@@ -6,6 +6,7 @@ import { DBManager } from '../../../managers/DBManager';
 import { PopUpType } from '../../../models/PopUpType';
 import DataView from '../../dataView/DataView';
 import './SelectDataPopUp.css';
+import { PoseData } from '../../../models/ApiTypes';
 
 interface SelectDataPopUp extends PopUp {
     showData(payload: { date: string }): void;
@@ -13,29 +14,26 @@ interface SelectDataPopUp extends PopUp {
 
 export const SelectDataPopUp = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [allData, setAllData] = useState<Data[]>([]);
+    const [allData, setAllData] = useState<PoseData[]>([]);
     const [targetDate, setTargetDate] = useState<string>("");
 
-    const handleSelect = (selectedItem: Data) => {
+    const handleSelect = async (selectedItem: PoseData) => {
         if (!targetDate) return;
-        const existData = DBManager.getInstance().getDataByDate(targetDate);
-        if(existData && existData.id !== selectedItem.id){
-            const newData:Data = {
-                ...existData,
-                usedAt: ""
-            };
-            DBManager.getInstance().updateData(newData);
+
+        try{
+            const existData = await DBManager.getInstance().getDataByDate(targetDate);
+            console.log(existData);
+            if(existData) await DBManager.getInstance().unassignPose(existData.usedAt);
+
+            await DBManager.getInstance().assignPose(targetDate, selectedItem?.id);
+
+            const freshAllData = await DBManager.getInstance().getAllData();
+            setAllData(freshAllData);
+            
+            initPopUp.close();
+        } catch(error){
+            console.log("팝업 데이터 배정 중 오류 발생: ", error);
         }
-
-        const updatedData: Data = {
-            ...selectedItem,
-            usedAt: targetDate
-        };
-        console.log(updatedData);
-
-        DBManager.getInstance().updateData(updatedData);
-        
-        initPopUp.close();
     };
 
     const initPopUp: SelectDataPopUp = {

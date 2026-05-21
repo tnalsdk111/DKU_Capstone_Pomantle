@@ -7,13 +7,10 @@ interface CapturedImages {
 }
 
 export const captureCombinedImage = (
-    webcamRef: React.RefObject<Webcam | null>,
-    dadtaCanvasRef: React.RefObject<HTMLCanvasElement | null>,
+    video: HTMLVideoElement,
+    drawingCanvas: HTMLCanvasElement,
     results: any
 ): CapturedImages | null => {
-        const video = webcamRef.current?.video;
-        const drawingCanvas = dadtaCanvasRef.current;
-        
         if(video && drawingCanvas){
             const combinedCanvas = document.createElement("canvas");
             const context = combinedCanvas.getContext("2d");

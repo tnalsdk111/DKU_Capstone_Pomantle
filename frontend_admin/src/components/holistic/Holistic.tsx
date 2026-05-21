@@ -30,9 +30,8 @@ let righthand_0 = undefined;
 const pointSize = 2;
 const lineWidth = 2;
 
-export const InitHolistic = (
-    onResultsCallback: (results: Results) => void
-    ) => { // 이걸 통해서 Holistic을 초기화 해 반환
+export const InitHolistic = (onResultsCallback: (results: Results) => void) => { 
+    // 이걸 통해서 Holistic을 초기화 해 반환
     // setUpHolistic
     // onResultsCallback은 함수임. Holistic이 사용할 함수
     // App.js에서 handleMediaPipeResults이고 handleMediaPipeResults는 이 js의 drawHolisticResults이다.
@@ -121,6 +120,7 @@ export const drawHolisticResults = (
         if(results.poseLandmarks && results.poseLandmarks[13]) pose_13 = results.poseLandmarks[13];
         if(results.leftHandLandmarks && results.leftHandLandmarks[0]) lefthand_0 = results.leftHandLandmarks[0];
         if(results.rightHandLandmarks && results.rightHandLandmarks[0]) righthand_0 = results.rightHandLandmarks[0];
+        // console.log(results);
 
         if(lefthand_0 !== undefined && pose_13 !== undefined) drawConnectors(canvasCtx, [lefthand_0, pose_13], [[0, 1]], {color: '#00CC00', lineWidth: lineWidth});
         if(righthand_0 !== undefined && pose_14 !== undefined) drawConnectors(canvasCtx, [righthand_0, pose_14], [[0, 1]], {color: '#00CC00', lineWidth: lineWidth});
@@ -129,10 +129,10 @@ export const drawHolisticResults = (
             drawConnectors(canvasCtx, results.poseLandmarks, poseConnections as [number, number][], {color: '#00FF00', lineWidth: lineWidth}); // 팔꿈치 까지만 연결
             drawLandmarks(canvasCtx, results.poseLandmarks.slice(11, 15), {color: '#FF0000', radius: pointSize}); // 팔꿈치 까지만 그림
         }
-
-        if(results.faceLandmarks){
-            drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_LIPS, {color: '#00FF00', lineWidth: lineWidth});
-        }
+        
+        // if(results.faceLandmarks){
+        //     drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_LIPS, {color: '#00FF00', lineWidth: lineWidth});
+        // }
         
         if(results.leftHandLandmarks){
             drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: lineWidth});
