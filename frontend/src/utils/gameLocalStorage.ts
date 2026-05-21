@@ -116,10 +116,4 @@ export function getTopEvaluateRecordsForDaily(
     .slice(0, limit);
 }
 
-export function resolveImageUrl(serverPath: string, origin: string): string {
-  if (!serverPath) return "";
-  if (serverPath.startsWith("http")) return serverPath;
-  const base = origin.replace(/\/$/, "");
-  const path = serverPath.startsWith("/") ? serverPath : `/${serverPath}`;
-  return `${base}${path}`;
-}
+

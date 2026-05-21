@@ -99,17 +99,15 @@ def evaluate_pose():
             404,
         )
 
-    landmark_groups = dataProcessing.parse_pixel_landmarks(player_landmarks)
-    user_landmarks = dataProcessing.flatten_landmark_groups(landmark_groups)
-    if user_landmarks is None:
+    landmarks = dataProcessing.parse_pixel_landmarks(player_landmarks)
+    if landmarks is None:
         return (
             jsonify(status="error", message="필수 데이터가 누락되었습니다."),
             400,
         )
 
-    ref_groups = dataProcessing.parse_pixel_landmarks(target_pose.target_vector)
-    ref_landmarks = dataProcessing.flatten_landmark_groups(ref_groups)
-    if ref_landmarks is None:
+    ref = dataProcessing.parse_pixel_landmarks(target_pose.target_vector)
+    if ref is None:
         return (
             jsonify(
                 status="error",
@@ -119,9 +117,7 @@ def evaluate_pose():
         )
 
     try:
-        score, is_passed = similarity.evaluate_against_reference(
-            user_landmarks, ref_landmarks
-        )
+        score, is_passed = similarity.evaluate_against_reference(landmarks, ref)
     except Exception:
         return (
             jsonify(
