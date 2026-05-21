@@ -2,15 +2,6 @@ import { Data } from "../models/Data";
 import ApiService from "../api/ApiService";
 import { PoseData } from "../models/ApiTypes";
 
-// let dummyData: Data[] = [ // 샘플링용 데이터
-//   { id: 0, poseName: "사과", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-3" },
-//   { id: 1, poseName: "바나나", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-4" },
-//   { id: 2, poseName: "키위", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-5" },
-//   { id: 3, poseName: "야쿠르트", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-6" },
-//   { id: 4, poseName: "오렌지", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-7" },
-//   { id: 5, poseName: "귤", originalImage: "...", publicImage: "...", vector: null, createdAt:"2026-4-4", usedAt: "2026-5-8" },
-// ];
-
 export class DBManager{
     private static instance: DBManager;
     private dataList: PoseData[] = [];
@@ -106,6 +97,7 @@ export class DBManager{
         try {
             await ApiService.getInstance().assignPoseToDate(date, poseId);
             await this.refreshData();
+            console.log("포즈 할당 성공");
             return true;
         } catch (error) {
             console.error("포즈 할당 실패:", error);
@@ -117,6 +109,7 @@ export class DBManager{
         try {
             await ApiService.getInstance().unassignPoseFromDate(date);
             await this.refreshData(); 
+            console.log("포즈 할당 취소 성공");
             return true;
         } catch (error) {
             console.error("포즈 할당 취소 실패:", error);

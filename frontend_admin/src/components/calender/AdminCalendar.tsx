@@ -7,7 +7,11 @@ import { PopUpType } from '../../models/PopUpType';
 
 const AdminCalendar = () => {
   const onDataClick = (value: Date) => {
-    const dateString = `${value.getFullYear()}-${value.getMonth() + 1}-${value.getDate()}`;
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const date = String(value.getDate()).padStart(2, '0');
+
+    const dateString = `${year}-${month}-${date}`;
     const payload = {
       date: dateString,
     };

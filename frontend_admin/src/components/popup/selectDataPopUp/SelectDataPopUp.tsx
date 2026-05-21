@@ -21,23 +21,13 @@ export const SelectDataPopUp = () => {
         if (!targetDate) return;
 
         try{
-            const existData = DBManager.getInstance().getDataByDate(targetDate); // 해당 날짜의 데이터를 가져와서
-            if(existData && existData.id !== selectedItem.id){ // 해당 데이터가 존재하고, 내가 바꾸려는 데이터와 다르다면
-                const newData:PoseData = { // 해당 데이터
-                    ...existData,
-                    usedAt: ""
-                };
-                await DBManager.getInstance().updateData(newData); // 새로 업데이트
-            }
+            const existData = await DBManager.getInstance().getDataByDate(targetDate);
+            console.log(existData);
+            if(existData) await DBManager.getInstance().unassignPose(existData.usedAt);
 
-            const updatedData: PoseData = {
-                ...selectedItem,
-            };
-            console.log(updatedData);
+            await DBManager.getInstance().assignPose(targetDate, selectedItem?.id);
 
-            await DBManager.getInstance().updateData(updatedData);
-
-            const freshAllData = DBManager.getInstance().getAllData();
+            const freshAllData = await DBManager.getInstance().getAllData();
             setAllData(freshAllData);
             
             initPopUp.close();

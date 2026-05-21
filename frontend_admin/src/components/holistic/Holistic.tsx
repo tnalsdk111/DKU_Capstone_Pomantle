@@ -129,10 +129,10 @@ export const drawHolisticResults = (
             drawConnectors(canvasCtx, results.poseLandmarks, poseConnections as [number, number][], {color: '#00FF00', lineWidth: lineWidth}); // 팔꿈치 까지만 연결
             drawLandmarks(canvasCtx, results.poseLandmarks.slice(11, 15), {color: '#FF0000', radius: pointSize}); // 팔꿈치 까지만 그림
         }
-
-        if(results.faceLandmarks){
-            drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_LIPS, {color: '#00FF00', lineWidth: lineWidth});
-        }
+        
+        // if(results.faceLandmarks){
+        //     drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_LIPS, {color: '#00FF00', lineWidth: lineWidth});
+        // }
         
         if(results.leftHandLandmarks){
             drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: lineWidth});

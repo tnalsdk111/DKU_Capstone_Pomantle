@@ -66,7 +66,7 @@ export const CreateDataPopUp = () => {
         }
 
         try{
-            await holisticRef.current.send({ image: video });
+            //  await holisticRef.current.send({ image: video });
             const capturedVector = lastResultRef.current;
             console.log(capturedVector);
 

@@ -36,11 +36,7 @@ export const CalendarDataPopUp = () => {
 
     const CancelData = () => {
         if(!data) return;
-        const dataSave:PoseData = {
-            ...data,
-            usedAt: "",
-        }
-        DBManager.getInstance().updateData(dataSave);
+        DBManager.getInstance().unassignPose(data.usedAt);
     }
 
     const initPopUp: CalendarDataPopUp = {
