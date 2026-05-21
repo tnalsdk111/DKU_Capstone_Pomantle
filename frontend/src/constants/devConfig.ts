@@ -6,7 +6,7 @@ import type { DailyPoseData } from "../models/ApiTypes";
  * `REACT_APP_SKIP_DAILY_POSE_WHEN_UNAVAILABLE=false` 를 넣어 검증하세요.
  */
 export const SKIP_DAILY_POSE_WHEN_UNAVAILABLE =
-  process.env.REACT_APP_SKIP_DAILY_POSE_WHEN_UNAVAILABLE !== "false";
+  process.env.REACT_APP_SKIP_DAILY_POSE_WHEN_UNAVAILABLE == "false";
 
 /**
  * 개발 중 evaluate API가 실패해도 임의 점수로 결과를 보고 싶으면 true(기본).
@@ -14,7 +14,7 @@ export const SKIP_DAILY_POSE_WHEN_UNAVAILABLE =
  * `REACT_APP_MOCK_EVALUATE_WHEN_UNAVAILABLE=false` 를 넣어 끄세요.
  */
 export const MOCK_EVALUATE_WHEN_UNAVAILABLE =
-  process.env.REACT_APP_MOCK_EVALUATE_WHEN_UNAVAILABLE !== "false";
+  process.env.REACT_APP_MOCK_EVALUATE_WHEN_UNAVAILABLE == "false";
 
 /** SKIP 시 evaluate 등에 쓰는 목업 daily (백엔드 없이 개발용) */
 export const DEV_FALLBACK_DAILY_POSE: DailyPoseData = {
