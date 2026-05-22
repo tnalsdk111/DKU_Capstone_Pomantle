@@ -31,7 +31,7 @@ export const CreateDataPopUp = () => {
     const [publicImg, setPublicImg] = useState<string>(""); // 공개 이미지
     const [poseVector, setPoseVector] = useState<any>(null);
     const [poseName, setPoseName] = useState<string>("");
-    const [timer, setTimer] = useState<number>(0);
+    const [timer, setTimer] = useState<number>(-1);
     
     const [isVisible, setIsVisible] = useState(false);
 
@@ -39,7 +39,7 @@ export const CreateDataPopUp = () => {
         setOriginImg("");
         setPublicImg("");
         setPoseVector(null);
-        setTimer(0);
+        setTimer(-1);
         setPoseName("");
         idRef.current = -1;
         usedAtRef.current = "";
@@ -84,7 +84,7 @@ export const CreateDataPopUp = () => {
     };
 
     const saveAll = async () => {
-        const chk = !originImg;
+        const chk = idRef.current !== -1;
 
         const dataSave:PoseData = {
             id: 0,
@@ -93,8 +93,8 @@ export const CreateDataPopUp = () => {
             publicImage: publicImg,
             target_vector: poseVector,
             createdAt: "",
-            usedAt: todayRef.current
-        }
+            usedAt: usedAtRef.current || todayRef.current
+        };
 
         try{
             console.log("저장할 데이터: ", dataSave);
@@ -105,7 +105,7 @@ export const CreateDataPopUp = () => {
             else{
                 await DBManager.getInstance().addData(dataSave);
             }
-            
+            initPopUp.close();
         } catch(error){
             console.error("저장 실패: ", error);
         }
@@ -121,6 +121,7 @@ export const CreateDataPopUp = () => {
         }
         else if (timer === 0 && webcamRef.current) { 
             handleCapture();
+            setTimer(-1);
         }
         return () => clearInterval(countdownRef.current);
     }, [timer, isVisible]); 

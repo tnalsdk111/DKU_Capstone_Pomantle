@@ -2,13 +2,21 @@ import { PoseData } from "../models/ApiTypes";
 
 export const ApiAdapter = {
     transformTargetVector: (rawTargetVector: any) => {
+        if ('pose' in rawTargetVector || 'leftHand' in rawTargetVector || 'rightHand' in rawTargetVector) {
+            console.log("이미 정제된 포즈 데이터이므로 변환 없이 그대로 반환합니다.");
+            return {
+                pose: rawTargetVector.pose || null,
+                leftHand: rawTargetVector.leftHand || null,
+                rightHand: rawTargetVector.rightHand || null
+            };
+        }
         // {}이걸 []이걸로 변경
         const convertToCoordinatePairs = (landmarks: any[]) => {
             if(!landmarks) return null;
-            return landmarks.map(point => ({
-                x: point.x,
-                y: point.y
-            }));
+            return landmarks.map(point => {
+                if (Array.isArray(point)) return point;
+                return [point.x, point.y];
+        });
         };
 
         const rawPose = rawTargetVector.poseLandmarks; // 몸
