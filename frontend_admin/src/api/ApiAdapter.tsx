@@ -26,7 +26,7 @@ export const ApiAdapter = {
 
         let filteredPose = null;
         if (rawPose) {
-            const targetIndices = [11, 12, 13, 14];
+            const targetIndices = [12, 11, 14, 13];
             filteredPose = targetIndices.map(idx => {
                 const point = rawPose[idx];
                 if (!point) return [0, 0];
@@ -37,8 +37,8 @@ export const ApiAdapter = {
         // 🚨 제 짝 그대로 정직하게 반환합니다.
         return {
             pose: filteredPose,
-            leftHand: convertToCoordinatePairs(rawRightHand) || null,
-            rightHand: convertToCoordinatePairs(rawLeftHand) || null
+            leftHand: convertToCoordinatePairs(rawLeftHand) || null,
+            rightHand: convertToCoordinatePairs(rawRightHand) || null
         };
     },
 

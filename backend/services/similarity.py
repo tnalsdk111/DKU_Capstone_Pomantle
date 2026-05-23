@@ -96,6 +96,25 @@ def CaculateAngle(p1, p2, p3): # 여기서 p는 좌표 하나임 [x, y]
     
     return angle, direction
 
+def IsShoulderSlopeMismatched(user_pose, answer_pose) -> bool:
+    """
+    [포즈 가드레일] 어깨의 좌우 높낮이(기울기 방향) 불일치 검사
+    MediaPipe Y축은 아래로 갈수록 커지므로 (Y가 작음 = 어깨가 올라감)을 의미합니다.
+    """
+    # 0번: 왼쪽 어깨, 1번: 오른쪽 어깨
+    # 정답 어깨의 Y축 차이 (오른쪽 - 왼쪽)
+    # 값이 양수(+)면 오른쪽 어깨가 더 내려간 상태, 음수(-)면 오른쪽 어깨가 더 올라간 상태
+    answer_slope = answer_pose[1][1] - answer_pose[0][1]
+    
+    # 유저 어깨의 Y축 차이 (오른쪽 - 왼쪽)
+    user_slope = user_pose[1][1] - user_pose[0][1]
+    
+    # 두 기울기의 곱이 음수(-)라는 것은 한쪽은 오른쪽이 올라갔고, 한쪽은 왼쪽이 올라갔다는 뜻!
+    # 미세한 노이즈(오차 범위 약 3~5픽셀)를 감안하여 -5.0보다 작을 때만 차단합니다.
+    if answer_slope * user_slope < -5.0:
+        return True
+    return False
+
 def PoseSimilarity(user_pose, answer_pose):
     total_similarity = 0
     for index in pose_index:
@@ -187,8 +206,8 @@ def score_landmark_groups(
     user_rightHand = user.get('rightHand')
     
     answer_pose = reference.get('pose')
-    answer_leftHand = reference.get('leftHand')
-    answer_rightHand = reference.get('rightHand')
+    answer_leftHand = reference.get('rightHand')
+    answer_rightHand = reference.get('leftHand')
 
     total_score = 0
     total_weight = 0
@@ -196,7 +215,10 @@ def score_landmark_groups(
     if answer_pose:
         total_weight += weight['POSE']
         if user_pose: 
-            total_score += PoseSimilarity(user_pose, answer_pose)
+            if IsShoulderSlopeMismatched(user_pose, answer_pose):
+                print("⚠️ [포즈 불일치 차단] 어깨의 기울기(높낮이) 방향이 정답과 반대입니다.")
+            else:
+                total_score += PoseSimilarity(user_pose, answer_pose)
 
     if answer_leftHand:
         total_weight += weight['HAND']
