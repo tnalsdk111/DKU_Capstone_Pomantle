@@ -107,6 +107,7 @@ def evaluate_pose():
         )
 
     ref = dataProcessing.parse_pixel_landmarks(target_pose.target_vector)
+
     if ref is None:
         return (
             jsonify(
