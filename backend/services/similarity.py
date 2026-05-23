@@ -206,8 +206,8 @@ def score_landmark_groups(
     user_rightHand = user.get('rightHand')
     
     answer_pose = reference.get('pose')
-    answer_leftHand = reference.get('rightHand')
-    answer_rightHand = reference.get('leftHand')
+    answer_leftHand = reference.get('leftHand')
+    answer_rightHand = reference.get('rightHand')
 
     total_score = 0
     total_weight = 0

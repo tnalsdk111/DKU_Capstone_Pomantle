@@ -82,6 +82,37 @@ function collectEvaluateLandmarks(
   };
 }
 
+function ApiAdaptor(
+  results: Results,
+): EvaluateLandmarksPayload {
+const convertToCoordinatePairs = (landmarks: any[]): [number, number][] | null => {
+  if(!landmarks) return null;
+      return landmarks.map(point => {
+          return [point.x, point.y];
+      });
+  };
+  
+  const rawPose = results.poseLandmarks;
+  const rawLeftHand = results.leftHandLandmarks;
+  const rawRightHand = results.rightHandLandmarks;
+
+  let filteredPose: [number, number][] | null = null;
+  if (rawPose) {
+      const targetIndices = [11, 12, 13, 14];
+      filteredPose = targetIndices.map(idx => {
+          const point = rawPose[idx];
+          if (!point) return [0, 0];
+
+          return [point.x || 0, point.y || 0] as [number, number];
+      });
+  }
+  return {
+      pose: filteredPose || null,
+      leftHand: convertToCoordinatePairs(rawLeftHand) || null,
+      rightHand: convertToCoordinatePairs(rawRightHand) || null
+  };
+};
+
 function hasEvaluableLandmarks(landmarks: EvaluateLandmarksPayload | null): boolean {
   if (!landmarks) return false;
   return (
@@ -172,7 +203,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
         const w = video?.videoWidth ?? 0;
         const h = video?.videoHeight ?? 0;
         if (w > 0 && h > 0) {
-          lastLandmarksRef.current = collectEvaluateLandmarks(results, w, h);
+          lastLandmarksRef.current = ApiAdaptor(results);
           lastOverlayRef.current = collectPopupOverlayData(results, w, h);
         } else {
           lastLandmarksRef.current = null;

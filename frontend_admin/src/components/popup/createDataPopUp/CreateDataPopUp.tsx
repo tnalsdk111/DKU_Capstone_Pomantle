@@ -233,7 +233,7 @@ export const CreateDataPopUp = () => {
                         <div style={{ display: originImg ? 'none' : 'block', width: '100%', height: '100%' }}>
                             <Webcam 
                                 ref={webcamRef} 
-                                mirrored={false} 
+                                mirrored={true} 
                                 className="video-element" 
                                 screenshotFormat="image/png"
                                 videoConstraints={{ width: 640, height: 480 }}
