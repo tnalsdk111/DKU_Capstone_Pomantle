@@ -15,11 +15,11 @@ import {
 } from "../../utils/gameLocalStorage";
 import { MOCK_EVALUATE_WHEN_UNAVAILABLE } from "../../constants/devConfig";
 
-const LIP_LANDMARK_INDICES = [
-  61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291,
-  78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308,
-  191, 80, 81, 82, 13, 312, 311, 310, 415,
-];
+// const LIP_LANDMARK_INDICES = [
+//   61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291,
+//   78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308,
+//   191, 80, 81, 82, 13, 312, 311, 310, 415,
+// ];
 
 const POSE_LANDMARK_INDICES = [11, 12, 13, 14] as const;
 const HAND_LANDMARK_COUNT = 21;
@@ -65,20 +65,20 @@ function collectEvaluateLandmarks(
       : null;
   };
 
-  const lipPoints = LIP_LANDMARK_INDICES.map((idx) => {
-    const lm = results.faceLandmarks?.[idx];
-    return lm ? toPixel(lm) : null;
-  });
-  const lips =
-    lipPoints.every((p): p is [number, number] => p !== null)
-      ? lipPoints
-      : null;
+  // const lipPoints = LIP_LANDMARK_INDICES.map((idx) => {
+  //   const lm = results.faceLandmarks?.[idx];
+  //   return lm ? toPixel(lm) : null;
+  // });
+  // const lips =
+  //   lipPoints.every((p): p is [number, number] => p !== null)
+  //     ? lipPoints
+  //     : null;
 
   return {
     pose,
     leftHand: collectHand(results.leftHandLandmarks),
     rightHand: collectHand(results.rightHandLandmarks),
-    lips,
+    // lips,
   };
 }
 
@@ -87,8 +87,8 @@ function hasEvaluableLandmarks(landmarks: EvaluateLandmarksPayload | null): bool
   return (
     landmarks.pose !== null ||
     landmarks.leftHand !== null ||
-    landmarks.rightHand !== null ||
-    landmarks.lips !== null
+    landmarks.rightHand !== null 
+    // landmarks.lips !== null
   );
 }
 
@@ -101,7 +101,7 @@ type PhotoSheet = {
     pose: ([number, number] | null)[];
     leftHand: ([number, number] | null)[];
     rightHand: ([number, number] | null)[];
-    lips: { idx: number; point: [number, number] }[];
+    // lips: { idx: number; point: [number, number] }[];
     sourceSize: {
       width: number;
       height: number;
@@ -127,10 +127,10 @@ function collectPopupOverlayData(
     rightHand: Array.from({ length: HAND_LANDMARK_COUNT }, (_, i) =>
       results.rightHandLandmarks?.[i] ? toPixel(results.rightHandLandmarks[i]) : null
     ),
-    lips: LIP_LANDMARK_INDICES.flatMap((idx) => {
-      const lm = results.faceLandmarks?.[idx];
-      return lm ? [{ idx, point: toPixel(lm) }] : [];
-    }),
+    // lips: LIP_LANDMARK_INDICES.flatMap((idx) => {
+    //   const lm = results.faceLandmarks?.[idx];
+    //   return lm ? [{ idx, point: toPixel(lm) }] : [];
+    // }),
     sourceSize: { width: videoWidth, height: videoHeight },
   };
 }
@@ -346,97 +346,108 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
     e.currentTarget.blur();
   };
 
-  if (view === "records") {
-    return (
-      <RecordPage
-        dailyId={dailyPose.daily_id}
-        onBack={() => setView("game")}
-      />
-    );
-  }
+  // if (view === "records") {
+  //   return (
+  //     <RecordPage
+  //       dailyId={dailyPose.daily_id}
+  //       onBack={() => setView("game")}
+  //     />
+  //   );
+  // }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        minHeight: "100vh",
-        backgroundColor: "#F0F0F0",
-        gap: "24px",
-        paddingTop: "28px",
-        boxSizing: "border-box",
-      }}
-    >
+    <>
       <div
         style={{
-          position: "relative",
-          display: "inline-block",
+          display: view === "game" ? "flex" : "none",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          minHeight: "100vh",
+          backgroundColor: "#F0F0F0",
+          gap: "24px",
+          paddingTop: "28px",
+          boxSizing: "border-box",
         }}
       >
-        <button
-          type="button"
-          onClick={() => setPhotoSheet({ imgSrc: "", mode: "tutorial" })}
-          onMouseUp={blurAfterMouseClick}
+        <div
           style={{
-            position: "absolute",
-            right: "100%",
-            top: "12px",
-            marginRight: "16px",
-            padding: "10px 16px",
-            fontWeight: 600,
-            cursor: "pointer",
+            position: "relative",
+            display: "inline-block",
           }}
         >
-          튜토리얼
-        </button>
+          <button
+            type="button"
+            onClick={() => setPhotoSheet({ imgSrc: "", mode: "tutorial" })}
+            onMouseUp={blurAfterMouseClick}
+            style={{
+              position: "absolute",
+              right: "100%",
+              top: "12px",
+              marginRight: "16px",
+              padding: "10px 16px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            튜토리얼
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("records")}
+            onMouseUp={blurAfterMouseClick}
+            style={{
+              position: "absolute",
+              left: "100%",
+              top: "12px",
+              marginLeft: "16px",
+              padding: "10px 16px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            기록
+          </button>
+          <CameraContainer
+            ref={cameraRef}
+            canvasRef={canvasRef}
+            timer={timer}
+            selectedTimer={selectedTimer}
+            onTimerSelect={setSelectedTimer}
+          />
+        </div>
+
         <button
           type="button"
-          onClick={() => setView("records")}
+          onClick={startTimer}
           onMouseUp={blurAfterMouseClick}
-          style={{
-            position: "absolute",
-            left: "100%",
-            top: "12px",
-            marginLeft: "16px",
-            padding: "10px 16px",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
+          style={{ padding: "10px 16px", fontWeight: 600, cursor: "pointer" }}
         >
-          기록
+          촬영 시작
         </button>
-        <CameraContainer
-          ref={cameraRef}
-          canvasRef={canvasRef}
-          timer={timer}
-          selectedTimer={selectedTimer}
-          onTimerSelect={setSelectedTimer}
+
+        {photoSheet && (
+          <PhotoPopup
+            imgSrc={photoSheet.imgSrc}
+            mode={photoSheet.mode}
+            attemptCount={attemptCount}
+            score={photoSheet.score}
+            overlayData={photoSheet.overlay ?? null}
+            errorMessage={photoSheet.errorMessage ?? null}
+            onClose={closePhotoPopup}
+          />
+        )}
+      </div>
+      {/* ─── [RECORDS VIEW] ─── */}
+      {/* 기록 페이지도 DOM에 항상 유지하되, view가 records일 때만 보이도록 합니다 */}
+      <div style={{ display: view === "records" ? "block" : "none" }}>
+        <RecordPage
+          dailyId={dailyPose.daily_id}
+          onBack={() => setView("game")} // 다시 게임으로 복귀
         />
       </div>
-
-      <button
-        type="button"
-        onClick={startTimer}
-        onMouseUp={blurAfterMouseClick}
-        style={{ padding: "10px 16px", fontWeight: 600, cursor: "pointer" }}
-      >
-        촬영 시작
-      </button>
-
-      {photoSheet && (
-        <PhotoPopup
-          imgSrc={photoSheet.imgSrc}
-          mode={photoSheet.mode}
-          attemptCount={attemptCount}
-          score={photoSheet.score}
-          overlayData={photoSheet.overlay ?? null}
-          errorMessage={photoSheet.errorMessage ?? null}
-          onClose={closePhotoPopup}
-        />
-      )}
-    </div>
+    </>
+    
   );
 };
 

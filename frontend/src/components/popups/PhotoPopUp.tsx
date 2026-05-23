@@ -11,7 +11,7 @@ interface PhotoPopupProps {
     pose: ([number, number] | null)[];
     leftHand: ([number, number] | null)[];
     rightHand: ([number, number] | null)[];
-    lips: { idx: number; point: [number, number] }[];
+    // lips: { idx: number; point: [number, number] }[];
     sourceSize: {
       width: number;
       height: number;
@@ -68,11 +68,11 @@ const HAND_CONNECTIONS: ReadonlyArray<readonly [number, number]> = [
   [0, 17],
 ];
 
-const LIP_CONNECTIONS: ReadonlyArray<readonly [number, number]> = [
-  [61, 146], [146, 91], [91, 181], [181, 84], [84, 17], [17, 314], [314, 405], [405, 321], [321, 375], [375, 291], [291, 61],
-  [78, 95], [95, 88], [88, 178], [178, 87], [87, 14], [14, 317], [317, 402], [402, 318], [318, 324], [324, 308], [308, 78],
-  [191, 80], [80, 81], [81, 82], [82, 13], [13, 312], [312, 311], [311, 310], [310, 415], [415, 308],
-];
+// const LIP_CONNECTIONS: ReadonlyArray<readonly [number, number]> = [
+//   [61, 146], [146, 91], [91, 181], [181, 84], [84, 17], [17, 314], [314, 405], [405, 321], [321, 375], [375, 291], [291, 61],
+//   [78, 95], [95, 88], [88, 178], [178, 87], [87, 14], [14, 317], [317, 402], [402, 318], [318, 324], [324, 308], [308, 78],
+//   [191, 80], [80, 81], [81, 82], [82, 13], [13, 312], [312, 311], [311, 310], [310, 415], [415, 308],
+// ];
 
 const PhotoPopup = ({
   imgSrc,
@@ -186,7 +186,8 @@ const PhotoPopup = ({
           })}
 
           {/* 입술 선 */}
-          {(() => {
+          {/*
+            {(() => {
             const lipMap = new Map<number, readonly [number, number]>();
             overlayData.lips.forEach(({ idx, point }) => {
               lipMap.set(idx, point);
@@ -209,6 +210,8 @@ const PhotoPopup = ({
               );
             });
           })()}
+          */}
+          
 
           {[...overlayData.pose, ...overlayData.leftHand, ...overlayData.rightHand].map((p, i) =>
             p ? <circle key={`${i}-${p[0]}-${p[1]}`} cx={p[0]} cy={p[1]} r={3} fill="#ff3b30" /> : null

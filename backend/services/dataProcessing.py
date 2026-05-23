@@ -17,7 +17,7 @@ def parse_pixel_landmarks(raw):
 
     out_dict = {}
     
-    keys_order = ["pose", "leftHand", "rightHand", "lips"]
+    keys_order = ["pose", "leftHand", "rightHand"]
 
     for key in keys_order:
         #딕셔너리에서 각 부위의 좌표 배열을 가져옴
