@@ -83,11 +83,12 @@ export const drawHolisticResults = (
 
     previewCtx.save();
     dataCtx.save();
+    
     previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
     dataCtx.clearRect(0, 0, dataCanvas.width, dataCanvas.height);
 
-    // canvasCtx.translate(canvasElement.width, 0);
-    // canvasCtx.scale(-1, 1);
+    previewCtx.translate(previewCanvas.width, 0);
+    previewCtx.scale(-1, 1);
     
     // 손 초기화
     let lefthand_0: any = undefined;

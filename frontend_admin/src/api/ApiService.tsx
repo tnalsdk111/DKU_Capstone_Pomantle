@@ -44,7 +44,7 @@ class ApiService {
   }
 
   async createPose(rawData: PoseData): Promise<void> { // 데이터 생성
-    console.log(rawData);
+    console.log("creatPose에 들어온 data", rawData);
     try{
         const payload = ApiAdapter.toCreatePosePayLoad(rawData);
         console.log('payload : ', payload);

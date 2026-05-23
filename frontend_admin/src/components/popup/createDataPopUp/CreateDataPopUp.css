@@ -74,6 +74,16 @@
 }
 
 /* 비디오, 캔버스, 결과 이미지 공통 스타일 */
+.video-element, canvas {
+    transform: scaleX(-1);
+}
+
+/* 2. 이미 촬영 완료된 결과 이미지는 원본 방향 그대로 보여주기 */
+.captured-img {
+    transform: none;
+}
+
+/* 3. 공통 스타일 속성 묶기 */
 .video-element, canvas, .captured-img {
     width: 100% !important;
     height: 100% !important;

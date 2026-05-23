@@ -18,6 +18,7 @@ def get_all_poses():
         result = [{
             "id": pose.pose_id,
             "poseName": pose.pose_name,
+            "target_vector": pose.target_vector,
             "originalImage": pose.original_image,
             "publicImage": pose.public_image,
             "createdAt": pose.created_at.strftime("%Y-%m-%d") if pose.created_at else None,
