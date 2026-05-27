@@ -27,7 +27,7 @@ export const captureCombinedImage = (
 
             const originImage = combinedCanvas.toDataURL("image/png");
 
-            context.setTransform(1, 0, 0, 1, 0, 0);
+            // context.setTransform(1, 0, 0, 1, 0, 0);
 
             if (results?.faceLandmarks) {
                 const landmarks = results.faceLandmarks;

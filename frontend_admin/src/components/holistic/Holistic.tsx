@@ -43,7 +43,7 @@ export const InitHolistic = (onResultsCallback: (results: Results) => void) => {
 
     // holistic 옵션 설정
     holistic.setOptions({
-        selfieMode: true,
+        selfieMode: false,
         modelComplexity: 1, // 얼마나 정확하게 할거냐. 2가 최대. 2로 하면 너무 느려짐
         smoothLandmarks: true,
         enableSegmentation: false, // 하면 segmentation이 적용되어서 빨간연기가 감쌈
