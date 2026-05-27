@@ -11,7 +11,6 @@ export const ApiAdapter = {
             };
         }
 
-        // 🚨 뒤집기(mirrorPoint) 없이 순수하게 좌표쌍만 변환합니다.
         const convertToCoordinatePairs = (landmarks: any[]) => {
             if(!landmarks) return null;
             return landmarks.map(point => {
@@ -26,7 +25,7 @@ export const ApiAdapter = {
 
         let filteredPose = null;
         if (rawPose) {
-            const targetIndices = [12, 11, 14, 13];
+            const targetIndices = [11, 12, 13, 14];
             filteredPose = targetIndices.map(idx => {
                 const point = rawPose[idx];
                 if (!point) return [0, 0];
