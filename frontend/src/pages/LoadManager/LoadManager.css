@@ -1,0 +1,65 @@
+.loading-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #ddd;
+  border-top: 6px solid #1e4fff;
+  border-radius: 50%;
+
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.load-daily-fail {
+  max-width: 420px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.load-error {
+  color: #b00020;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.load-hint {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.home-from-load-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #1e4fff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.home-from-load-btn:hover {
+  opacity: 0.92;
+}
