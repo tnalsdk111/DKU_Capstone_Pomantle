@@ -1,4 +1,5 @@
 import React from "react";
+import PoseOverlayImage from "../../components/pose/PoseOverlayImage";
 import {
   getTopEvaluateRecordsForDaily,
   type StoredEvaluateRecord,
@@ -41,15 +42,12 @@ function RecordRow({
         }}
       >
         {record.imgSrc ? (
-          <img
-            src={record.imgSrc}
+          <PoseOverlayImage
+            imgSrc={record.imgSrc}
+            overlayData={record.overlay ?? null}
+            width="100%"
             alt={`유사도 ${rank}위 촬영 사진`}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
+            borderRadius="0"
           />
         ) : (
           <div

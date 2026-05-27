@@ -1,3 +1,5 @@
+import type { PoseOverlayData } from "../models/PoseOverlay";
+
 const RECORDS_KEY = "pomantle_evaluate_records";
 
 export type StoredEvaluateRecord = {
@@ -8,6 +10,7 @@ export type StoredEvaluateRecord = {
   is_passed: boolean;
   attemptNumber: number;
   recordedAt: string;
+  overlay?: PoseOverlayData | null;
 };
 
 type RecordsBucket = {

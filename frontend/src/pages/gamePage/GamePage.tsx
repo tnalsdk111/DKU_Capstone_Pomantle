@@ -13,6 +13,7 @@ import type {
 import {
   appendEvaluateRecord,
 } from "../../utils/gameLocalStorage";
+import type { PoseOverlayData } from "../../models/PoseOverlay";
 import { MOCK_EVALUATE_WHEN_UNAVAILABLE } from "../../constants/devConfig";
 
 // const LIP_LANDMARK_INDICES = [
@@ -128,16 +129,7 @@ type PhotoSheet = {
   mode: PhotoPopupMode;
   score?: number;
   errorMessage?: string | null;
-  overlay?: {
-    pose: ([number, number] | null)[];
-    leftHand: ([number, number] | null)[];
-    rightHand: ([number, number] | null)[];
-    // lips: { idx: number; point: [number, number] }[];
-    sourceSize: {
-      width: number;
-      height: number;
-    };
-  } | null;
+  overlay?: PoseOverlayData | null;
 };
 
 function collectPopupOverlayData(
@@ -252,7 +244,11 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
   }, []);
 
   const runEvaluate = useCallback(
-    async (image: string, attemptNumber: number) => {
+    async (
+      image: string,
+      attemptNumber: number,
+      capturedOverlay: PoseOverlayData | null
+    ) => {
       if (!dailyPose.daily_id) {
         setPhotoSheet({
           imgSrc: image,
@@ -263,14 +259,14 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
       }
 
       const landmarks = lastLandmarksRef.current;
-      const overlay = lastOverlayRef.current;
+      const overlay = capturedOverlay ?? lastOverlayRef.current;
       if (!landmarks || !hasEvaluableLandmarks(landmarks)) {
         setPhotoSheet({
           imgSrc: image,
           mode: "fail",
           errorMessage:
             "인식된 관절이 없습니다. 상체와 손이 잘 보이게 다시 촬영해 주세요.",
-          overlay: null,
+          overlay,
         });
         return;
       }
@@ -295,6 +291,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           is_passed: result.is_passed,
           attemptNumber,
           recordedAt: new Date().toISOString(),
+          overlay,
         });
 
         setPhotoSheet({
@@ -316,6 +313,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
             is_passed: mockPassed,
             attemptNumber,
             recordedAt: new Date().toISOString(),
+            overlay,
           });
 
           setPhotoSheet({
@@ -363,8 +361,11 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
       if (image) {
         attemptCountRef.current += 1;
         const n = attemptCountRef.current;
+        const capturedOverlay = lastOverlayRef.current
+          ? structuredClone(lastOverlayRef.current)
+          : null;
         setAttemptCount(n);
-        void runEvaluate(image, n);
+        void runEvaluate(image, n, capturedOverlay);
       }
     }
   }, [timer, runEvaluate]);
