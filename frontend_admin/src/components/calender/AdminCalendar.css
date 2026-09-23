@@ -1,47 +1,140 @@
-/* AdminCalendar.css */
+/* AdminCalendar.css - Pop & Neo-Brutalism */
 
 .admin-calendar-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px;
+  padding: 10px 20px 40px;
   width: 100%;
   box-sizing: border-box;
 }
 
+/* Base Calendar Container */
 .react-calendar {
-  width: 700px !important;
-  max-width: 95%;
-  
-  /* [수정 1] 비율 고정을 지웁니다. 내용물(날짜)이 박스 크기를 결정하게 하세요. */
-  height: auto !important; 
-  
-  /* [수정 2] 잘리는 현상을 방지하기 위해 hidden을 지우거나 visible로 바꿉니다. */
-  overflow: visible; 
-
-  background: white;
-  border-radius: 20px !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  border: none !important;
-  padding: 20px;
+  width: 760px !important;
+  max-width: 95vw;
+  height: auto !important;
+  background: var(--bg-card) !important;
+  border: 3.5px solid var(--ink-black) !important;
+  border-radius: 28px !important;
+  box-shadow: var(--shadow-xl) !important;
+  padding: 24px !important;
+  font-family: var(--font-main) !important;
+  overflow: visible !important;
 }
 
-/* 내부 날짜들이 꽉 차게 정렬 */
+/* Navigation Header (Month / Year & Arrows) */
+.react-calendar__navigation {
+  display: flex !important;
+  height: 52px !important;
+  margin-bottom: 20px !important;
+  gap: 8px !important;
+}
+
+.react-calendar__navigation button {
+  min-width: 48px !important;
+  background: var(--bg-subtle) !important;
+  border: 2px solid var(--ink-black) !important;
+  border-radius: 12px !important;
+  font-family: var(--font-main) !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: var(--ink-black) !important;
+  box-shadow: 2px 2px 0px var(--ink-black) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.react-calendar__navigation button:enabled:hover {
+  background: var(--pop-yellow) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px var(--ink-black) !important;
+}
+
+.react-calendar__navigation button:enabled:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
+}
+
+.react-calendar__navigation__label {
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  background: #fff !important;
+}
+
+/* Weekday Headers (일, 월, 화, 수, 목, 금, 토) */
+.react-calendar__month-view__weekdays {
+  text-align: center !important;
+  font-weight: 900 !important;
+  font-size: 15px !important;
+  color: var(--ink-black) !important;
+  margin-bottom: 12px !important;
+  text-transform: uppercase !important;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+/* Days Grid */
 .react-calendar__month-view__days {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
+  gap: 8px !important;
 }
 
+/* Date Tiles */
 .react-calendar__tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* [수정 3] 날짜 칸의 위아래 여백을 주어 박스가 자연스럽게 늘어나게 합니다. */
-  padding: 20px 0 !important; 
-  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px 0 !important;
+  height: 64px !important;
+  background: var(--bg-subtle) !important;
+  border: 2px solid var(--ink-black) !important;
+  border-radius: 14px !important;
+  box-shadow: 2px 2px 0px var(--ink-black) !important;
+  font-family: var(--font-main) !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: var(--ink-black) !important;
+  cursor: pointer !important;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-/* 폰트 크기 살짝 키우기 (선택사항) */
+.react-calendar__tile:enabled:hover {
+  background: var(--pop-yellow) !important;
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 4px 4px 0px var(--ink-black) !important;
+}
+
+.react-calendar__tile:enabled:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
+}
+
+/* Other Month Days */
+.react-calendar__month-view__days__day--neighboringMonth {
+  opacity: 0.35 !important;
+  background: #fff !important;
+}
+
+/* Today Tile */
+.react-calendar__tile--now {
+  background: var(--pop-yellow) !important;
+  border-color: var(--ink-black) !important;
+  color: var(--ink-black) !important;
+  font-weight: 900 !important;
+  position: relative !important;
+}
+
+/* Selected Date Tile */
+.react-calendar__tile--active {
+  background: var(--pop-orange) !important;
+  color: #ffffff !important;
+  border-color: var(--ink-black) !important;
+}
+
 .react-calendar__tile abbr {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }

@@ -15,12 +15,7 @@ import {
 } from "../../utils/gameLocalStorage";
 import type { PoseOverlayData } from "../../models/PoseOverlay";
 import { MOCK_EVALUATE_WHEN_UNAVAILABLE } from "../../constants/devConfig";
-
-// const LIP_LANDMARK_INDICES = [
-//   61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291,
-//   78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308,
-//   191, 80, 81, 82, 13, 312, 311, 310, 415,
-// ];
+import "./GamePage.css";
 
 const POSE_LANDMARK_INDICES = [11, 12, 13, 14] as const;
 const HAND_LANDMARK_COUNT = 21;
@@ -35,62 +30,14 @@ function toMirroredCanvasPixel(
   return [Math.round(videoWidth - ux), Math.round(uy)];
 }
 
-/** 평가 API용 부위별 랜드마크. 해당 부위 인식 실패 시 null */
-function collectEvaluateLandmarks(
-  results: Results,
-  videoWidth: number,
-  videoHeight: number
-): EvaluateLandmarksPayload {
-  const toPixel = (lm: { x: number; y: number }) =>
-    toMirroredCanvasPixel(lm, videoWidth, videoHeight);
-
-  const posePoints = POSE_LANDMARK_INDICES.map((idx) => {
-    const lm = results.poseLandmarks?.[idx];
-    return lm ? toPixel(lm) : null;
-  });
-  const pose =
-    posePoints.every((p): p is [number, number] => p !== null)
-      ? posePoints
-      : null;
-
-  const collectHand = (
-    hand: Results["leftHandLandmarks"]
-  ): [number, number][] | null => {
-    if (!hand?.length) return null;
-    const points = Array.from({ length: HAND_LANDMARK_COUNT }, (_, i) => {
-      const lm = hand[i];
-      return lm ? toPixel(lm) : null;
-    });
-    return points.every((p): p is [number, number] => p !== null)
-      ? points
-      : null;
-  };
-
-  // const lipPoints = LIP_LANDMARK_INDICES.map((idx) => {
-  //   const lm = results.faceLandmarks?.[idx];
-  //   return lm ? toPixel(lm) : null;
-  // });
-  // const lips =
-  //   lipPoints.every((p): p is [number, number] => p !== null)
-  //     ? lipPoints
-  //     : null;
-
-  return {
-    pose,
-    leftHand: collectHand(results.leftHandLandmarks),
-    rightHand: collectHand(results.rightHandLandmarks),
-    // lips,
-  };
-}
-
 function ApiAdaptor(
   results: Results,
 ): EvaluateLandmarksPayload {
-const convertToCoordinatePairs = (landmarks: any[]): [number, number][] | null => {
-  if(!landmarks) return null;
-      return landmarks.map(point => {
-          return [point.x, point.y];
-      });
+  const convertToCoordinatePairs = (landmarks: any[]): [number, number][] | null => {
+    if(!landmarks) return null;
+    return landmarks.map(point => {
+      return [point.x, point.y];
+    });
   };
   
   const rawPose = results.poseLandmarks;
@@ -99,28 +46,26 @@ const convertToCoordinatePairs = (landmarks: any[]): [number, number][] | null =
 
   let filteredPose: [number, number][] | null = null;
   if (rawPose) {
-      const targetIndices = [11, 12, 13, 14];
-      filteredPose = targetIndices.map(idx => {
-          const point = rawPose[idx];
-          if (!point) return [0, 0];
-
-          return [point.x || 0, point.y || 0] as [number, number];
-      });
+    const targetIndices = [11, 12, 13, 14];
+    filteredPose = targetIndices.map(idx => {
+      const point = rawPose[idx];
+      if (!point) return [0, 0];
+      return [point.x || 0, point.y || 0] as [number, number];
+    });
   }
   return {
-      pose: filteredPose || null,
-      leftHand: convertToCoordinatePairs(rawLeftHand) || null,
-      rightHand: convertToCoordinatePairs(rawRightHand) || null
+    pose: filteredPose || null,
+    leftHand: convertToCoordinatePairs(rawLeftHand) || null,
+    rightHand: convertToCoordinatePairs(rawRightHand) || null
   };
-};
+}
 
 function hasEvaluableLandmarks(landmarks: EvaluateLandmarksPayload | null): boolean {
   if (!landmarks) return false;
   return (
     landmarks.pose !== null ||
     landmarks.leftHand !== null ||
-    landmarks.rightHand !== null 
-    // landmarks.lips !== null
+    landmarks.rightHand !== null
   );
 }
 
@@ -150,10 +95,6 @@ function collectPopupOverlayData(
     rightHand: Array.from({ length: HAND_LANDMARK_COUNT }, (_, i) =>
       results.rightHandLandmarks?.[i] ? toPixel(results.rightHandLandmarks[i]) : null
     ),
-    // lips: LIP_LANDMARK_INDICES.flatMap((idx) => {
-    //   const lm = results.faceLandmarks?.[idx];
-    //   return lm ? [{ idx, point: toPixel(lm) }] : [];
-    // }),
     sourceSize: { width: videoWidth, height: videoHeight },
   };
 }
@@ -265,7 +206,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           imgSrc: image,
           mode: "fail",
           errorMessage:
-            "인식된 관절이 없습니다. 상체와 손이 잘 보이게 다시 촬영해 주세요.",
+            "인식된 관절이 없어요! 상체와 손이 카메라 화면에 잘 보이게 서 주세요.",
           overlay,
         });
         return;
@@ -343,6 +284,7 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
       alert("오늘의 포즈 정보가 없습니다. 처음부터 다시 시작해 주세요.");
       return;
     }
+    if (timer > 0) return;
     expectCaptureRef.current = true;
     setTimer(selectedTimer);
   };
@@ -374,72 +316,51 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
     setPhotoSheet(null);
   };
 
-  const blurAfterMouseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
-  };
-
-  // if (view === "records") {
-  //   return (
-  //     <RecordPage
-  //       dailyId={dailyPose.daily_id}
-  //       onBack={() => setView("game")}
-  //     />
-  //   );
-  // }
-
   return (
     <>
-      <div
-        style={{
-          display: view === "game" ? "flex" : "none",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          minHeight: "100vh",
-          backgroundColor: "#F0F0F0",
-          gap: "24px",
-          paddingTop: "28px",
-          boxSizing: "border-box",
-        }}
-      >
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => setPhotoSheet({ imgSrc: "", mode: "tutorial" })}
-            onMouseUp={blurAfterMouseClick}
-            style={{
-              position: "absolute",
-              right: "100%",
-              top: "12px",
-              marginRight: "16px",
-              padding: "10px 16px",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            튜토리얼
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("records")}
-            onMouseUp={blurAfterMouseClick}
-            style={{
-              position: "absolute",
-              left: "100%",
-              top: "12px",
-              marginLeft: "16px",
-              padding: "10px 16px",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            기록
-          </button>
+      <div className="game-screen" style={{ display: view === "game" ? "flex" : "none" }}>
+        {/* Top Header */}
+        <header className="game-header">
+          <div className="hud-left">
+            <button
+              id="exit-game-btn"
+              type="button"
+              className="neo-btn hud-btn"
+              onClick={onExitToMain}
+            >
+              <span>← 나가기</span>
+            </button>
+          </div>
+
+          <div className="hud-center">
+            <div className="mission-sticker">
+              <span>🎯</span>
+              <span>오늘의 문제 #{dailyPose.daily_id}</span>
+            </div>
+          </div>
+
+          <div className="hud-right">
+            <button
+              id="tutorial-btn"
+              type="button"
+              className="neo-btn hud-btn"
+              onClick={() => setPhotoSheet({ imgSrc: "", mode: "tutorial" })}
+            >
+              <span>💡 룰 보기</span>
+            </button>
+            <button
+              id="records-btn"
+              type="button"
+              className="neo-btn hud-btn records-btn"
+              onClick={() => setView("records")}
+            >
+              <span>🏆 랭킹</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Camera Viewport Area */}
+        <div className="viewport-wrapper">
           <CameraContainer
             ref={cameraRef}
             canvasRef={canvasRef}
@@ -449,15 +370,27 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           />
         </div>
 
-        <button
-          type="button"
-          onClick={startTimer}
-          onMouseUp={blurAfterMouseClick}
-          style={{ padding: "10px 16px", fontWeight: 600, cursor: "pointer" }}
-        >
-          촬영 시작
-        </button>
+        {/* Bottom Controls */}
+        <div className="game-controls">
+          <button
+            id="capture-shutter-btn"
+            type="button"
+            className="neo-btn shutter-btn"
+            onClick={startTimer}
+            disabled={timer > 0}
+          >
+            <span className="shutter-icon">📸</span>
+            <span>{timer > 0 ? `준비... ${timer}초` : "포즈 촬영하기"}</span>
+          </button>
 
+          {attemptCount > 0 && (
+            <span className="attempt-badge">
+              총 {attemptCount}번째 시도 중 🎯
+            </span>
+          )}
+        </div>
+
+        {/* Modal Popups */}
         {photoSheet && (
           <PhotoPopup
             imgSrc={photoSheet.imgSrc}
@@ -470,16 +403,15 @@ const GamePage = ({ dailyPose, onExitToMain }: GamePageProps) => {
           />
         )}
       </div>
-      {/* ─── [RECORDS VIEW] ─── */}
-      {/* 기록 페이지도 DOM에 항상 유지하되, view가 records일 때만 보이도록 합니다 */}
+
+      {/* Records View Screen */}
       <div style={{ display: view === "records" ? "block" : "none" }}>
         <RecordPage
           dailyId={dailyPose.daily_id}
-          onBack={() => setView("game")} // 다시 게임으로 복귀
+          onBack={() => setView("game")}
         />
       </div>
     </>
-    
   );
 };
 

@@ -208,13 +208,22 @@ export const CreateDataPopUp = () => {
     return (
     <div className='modal-overlay' onClick={initPopUp.close}>
         <div className='modal-content-container' onClick={(e) => e.stopPropagation()}>
+            <button
+                type="button"
+                className="close-btn"
+                style={{ position: 'absolute', top: '24px', right: '28px' }}
+                onClick={initPopUp.close}
+                aria-label="닫기"
+            >
+                &times;
+            </button>
             
             {/* 1. 상단: 포즈 이름 입력 영역 */}
             <div className="input-section">
                 <input 
                     type="text" 
                     className="pose-name-input" 
-                    placeholder="포즈 이름을 입력해주세요"
+                    placeholder="등록할 포즈 이름을 입력해주세요"
                     value={poseName}
                     onChange={(e) => setPoseName(e.target.value)}
                 />

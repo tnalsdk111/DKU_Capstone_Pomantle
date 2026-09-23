@@ -1,0 +1,142 @@
+.game-screen {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(10px, 1.8vh, 18px) 16px clamp(12px, 2vh, 20px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Top Navigation Bar */
+.game-header {
+  width: min(980px, 94vw);
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(6px, 1.2vh, 14px);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.hud-left {
+  display: flex;
+  align-items: center;
+}
+
+.hud-btn {
+  padding: 10px 18px;
+  background: var(--bg-card);
+  color: var(--ink-black);
+  font-size: 14px;
+}
+
+.hud-center {
+  display: flex;
+  align-items: center;
+}
+
+.mission-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background-color: var(--pop-yellow);
+  border: var(--border-width) solid var(--ink-black);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink-black);
+  transform: rotate(-1deg);
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.records-btn {
+  background-color: var(--pop-purple);
+  color: #ffffff;
+}
+
+.records-btn:hover {
+  background-color: #5e35db;
+}
+
+/* Viewport Area */
+.viewport-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Bottom Controls Section */
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1vh, 10px);
+  flex-shrink: 0;
+  margin-top: clamp(6px, 1.2vh, 14px);
+}
+
+/* Big Push Shutter Button */
+.shutter-btn {
+  padding: clamp(12px, 1.6vh, 16px) clamp(32px, 4vw, 48px);
+  background: var(--pop-orange);
+  color: #ffffff;
+  font-size: clamp(16px, 2vh, 20px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-md);
+}
+
+.shutter-btn:hover {
+  background: #ff471a;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.shutter-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 2px 2px 0px var(--ink-black);
+}
+
+.shutter-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.shutter-icon {
+  font-size: 22px;
+}
+
+.attempt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 2px solid var(--ink-black);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-sm);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink-black);
+}

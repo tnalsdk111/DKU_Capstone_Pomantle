@@ -1,43 +1,75 @@
-/* 1. 배경 및 레이아웃 컨테이너 */
+/* CalendarDataPopUp.css - Pop & Neo-Brutalism */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(24, 24, 27, 0.65);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: fadeIn 0.2s ease-out;
 }
 
-/* 2. 팝업 박스 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  width: 450px;
-  max-width: 90%;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: 28px;
+  border: 3.5px solid var(--ink-black);
+  width: 500px;
+  max-width: 95%;
+  box-shadow: 10px 10px 0px var(--ink-black);
   display: flex;
   flex-direction: column;
-  animation: modal-show 0.3s ease-out;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-sizing: border-box;
 }
 
-@keyframes modal-show {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 3. 헤더 및 바디 */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
+  border-bottom: 2.5px dashed #e4e4e7;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink-black);
+}
+
+.close-btn {
+  background: var(--bg-subtle);
+  border: 2px solid var(--ink-black);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0px var(--ink-black);
+  transition: all 0.15s ease;
+}
+
+.close-btn:hover {
+  background: var(--pop-orange);
+  color: #fff;
+  transform: translate(-1px, -1px);
 }
 
 .modal-body {
@@ -47,24 +79,21 @@
   gap: 15px;
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0 5px;
+.empty-msg {
+  padding: 30px 20px;
+  text-align: center;
+  color: var(--ink-gray);
+  font-weight: 700;
+  font-size: 16px;
+  background: var(--bg-subtle);
+  border: 2px dashed #d4d4d8;
+  border-radius: 16px;
 }
 
-/* 4. 푸터 및 버튼 그룹 (가로/세로 유연하게 사용) */
 .modal-footer {
   display: flex;
-  flex-direction: column; /* 기본 세로 배치 */
+  flex-direction: column;
   gap: 10px;
   margin-top: 20px;
   width: 100%;
-}
-
-/* 상황에 따라 가로 배치가 필요하면 이 클래스를 추가하세요 */
-.modal-footer.row {
-  flex-direction: row;
 }
