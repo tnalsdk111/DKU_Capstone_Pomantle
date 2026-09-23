@@ -1,41 +1,124 @@
-/* 이미지 그룹: 가로 너비를 90% 이상 사용하도록 */
-.item-image-group {
+/* DataView.css - Pop & Neo-Brutalism */
+.data-item-card {
+  background: var(--bg-card);
+  border: var(--border-width) solid var(--ink-black);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  padding: 24px;
   display: flex;
-  justify-content: center;
-  gap: 20px; /* 이미지 사이 간격 약간 넓힘 */
-  width: 95%; /* 카드의 너비를 거의 다 사용 */
-  margin: 10px 0;
+  flex-direction: column;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-sizing: border-box;
 }
 
-/* 개별 이미지 박스: 너비 제한을 풀고 크기를 키움 */
+.data-item-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  border-bottom: 2px dashed #e4e4e7;
+  padding-bottom: 14px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.item-number {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--pop-yellow);
+  border: 2px solid var(--ink-black);
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 1px 1px 0px var(--ink-black);
+}
+
+.item-pose-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--ink-black);
+}
+
+.card-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meta-chip {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-gray);
+  background: var(--bg-subtle);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #d4d4d8;
+}
+
+.meta-chip.used {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+/* Image Group (Polaroid Style) */
+.item-image-group {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
 .image-box {
   flex: 1;
-  max-width: 350px; /* 기존 200px에서 350px 정도로 대폭 확대 */
-  aspect-ratio: 1 / 1.2; /* 세로로 약간 더 긴 느낌 유지 또는 1/1 */
-  background: #f0f0f0;
-  border-radius: 15px;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  border: 2px solid var(--ink-black);
+  border-radius: 16px;
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.05); /* 깊이감 추가 */
-  object-fit: cover;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .image-box img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 이미지가 잘리지 않게 하려면 contain, 꽉 채우려면 cover */
-  padding: 10px; /* 이미지 테두리에 약간의 여백 */
+  object-fit: cover;
 }
 
+.image-box .label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(24, 24, 27, 0.85);
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* Card Footer Actions */
 .card-footer {
-    display: flex;         /* 이 줄을 추가해야 gap이 동작합니다 */
-    flex-direction: column; /* 만약 위아래로 배치하고 싶다면 column */
-    /* 또는 가로로 배치하고 싶다면: */
-    /* flex-direction: row; */ 
-    
-    flex-shrink: 0;
-    width: 100%;
-    gap: 10px;             /* 이제 버튼 사이가 20px만큼 띄워집니다 */
-    margin-top: 20px;
-    padding-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
 }

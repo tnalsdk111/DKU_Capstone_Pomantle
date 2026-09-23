@@ -1,6 +1,7 @@
 import React from "react";
 import PoseOverlayImage from "../pose/PoseOverlayImage";
 import type { PoseOverlayData } from "../../models/PoseOverlay";
+import "./PhotoPopUp.css";
 
 export type PhotoPopupMode = "tutorial" | "evaluating" | "fail" | "win";
 
@@ -14,44 +15,6 @@ interface PhotoPopupProps {
   onClose: () => void;
 }
 
-const overlay: React.CSSProperties = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  backgroundColor: "rgba(0,0,0,0.75)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 100,
-  padding: "16px",
-  boxSizing: "border-box",
-};
-
-const modalBase: React.CSSProperties = {
-  width: "clamp(520px, 60vw, 760px)",
-  maxWidth: "92vw",
-  aspectRatio: "4 / 3",
-  maxHeight: "84vh",
-  overflow: "hidden",
-  borderRadius: "20px",
-  padding: "24px 20px 20px",
-  boxSizing: "border-box",
-};
-
-const btnMuted: React.CSSProperties = {
-  flex: 1,
-  padding: "12px 10px",
-  fontSize: "14px",
-  backgroundColor: "#D8D8E0",
-  color: "#222",
-  border: "none",
-  borderRadius: "12px",
-  cursor: "pointer",
-  fontWeight: 600,
-};
-
 const PhotoPopup = ({
   imgSrc,
   mode,
@@ -61,204 +24,157 @@ const PhotoPopup = ({
   errorMessage,
   onClose,
 }: PhotoPopupProps) => {
-  const blurAfterMouseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
+  const renderPoseOverlay = () => {
+    if (!imgSrc) return null;
+    return (
+      <div className="preview-container">
+        <PoseOverlayImage
+          imgSrc={imgSrc}
+          overlayData={overlayData}
+          width="100%"
+          alt="Pose Capture"
+        />
+      </div>
+    );
   };
 
-  const renderPoseOverlayImage = (width: string, maxWidth: string) => (
-    <PoseOverlayImage
-      imgSrc={imgSrc}
-      overlayData={overlayData}
-      width={width}
-      maxWidth={maxWidth}
-      alt="촬영 미리보기"
-    />
-  );
-
   const renderWinBody = () => (
-    <div
-      style={{
-        ...modalBase,
-        backgroundColor: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "16px",
-      }}
-    >
-      <h1
-        style={{
-          margin: 0,
-          textAlign: "center",
-          fontSize: "35px",
-          fontWeight: 900,
-          letterSpacing: "0.06em",
-          color: "#333",
-        }}
-      >
-        WIN
-      </h1>
-      <p style={{ color: "#555", margin: 0, fontSize: "20px", lineHeight: 1.25 }}>
-        {attemptCount}번째 시도만에 성공하셨습니다.
+    <div className="popup-card win-card">
+      <div className="popup-badge badge-win">
+        <span>🎉</span>
+        <span>미션 성공!</span>
+      </div>
+      <h1 className="popup-title">정답입니다!</h1>
+      <p className="popup-subtitle">
+        {attemptCount}번째 시도만에 <strong>{score?.toFixed(1) ?? "90+"}%</strong> 싱크로율로 정답 포즈를 맞췄어요!
       </p>
-      {imgSrc && (
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          {renderPoseOverlayImage("70%", "500px")}
-        </div>
-      )}
+
+      {renderPoseOverlay()}
+
       <button
+        id="win-confirm-btn"
         type="button"
+        className="neo-btn popup-btn btn-yellow"
         onClick={onClose}
-        onMouseUp={blurAfterMouseClick}
-        style={{
-          ...btnMuted,
-          flex: "none",
-          width: "min(460px, 92%)",
-          backgroundColor: "#007AFF",
-          color: "#fff",
-        }}
       >
-        확인
+        확인하고 기록 보기
       </button>
     </div>
   );
 
   const renderEvaluating = () => (
-    <div
-      style={{
-        ...modalBase,
-        backgroundColor: "#fff",
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        gap: "14px",
-        alignItems: "center",
-      }}
-    >
-      <h2 style={{ margin: 0, color: "#333", fontSize: "35px", lineHeight: 1.1 }}>
-        평가 중…
-      </h2>
-      <p style={{ color: "#666", margin: 0, fontSize: "20px", lineHeight: 1.25 }}>
-        서버에서 포즈 유사도를 계산하고 있습니다.
+    <div className="popup-card">
+      <div className="popup-badge badge-eval">
+        <span>🔍</span>
+        <span>AI 관절 분석 중</span>
+      </div>
+      <h2 className="popup-title">점수를 매기는 중…</h2>
+      <p className="popup-subtitle">
+        정답 포즈와 내 관절 각도가 얼마나 일치하는지 비교하고 있어요!
       </p>
-      {imgSrc && (
-        <div
-          style={{
-            width: "100%",
-            flex: 1,
-            minHeight: 0,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {renderPoseOverlayImage("75%", "540px")}
-        </div>
-      )}
+
+      {renderPoseOverlay()}
     </div>
   );
 
-  const renderFail = () => (
-    <div
-      style={{
-        ...modalBase,
-        backgroundColor: "#fff",
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "16px",
-      }}
-    >
-      <h2 style={{ margin: 0, color: "#333", fontSize: "35px", lineHeight: 1.1 }}>
-        아쉽습니다
-      </h2>
-      <p style={{ color: "#555", margin: 0, fontSize: "20px", lineHeight: 1.25 }}>
-        {errorMessage ??
-          (typeof score === "number"
-            ? `유사도 ${score.toFixed(1)}% — 기준(85%)에 도달하지 못했습니다.`
-            : "평가를 완료하지 못했습니다.")}
-      </p>
-      {imgSrc && (
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          {renderPoseOverlayImage("70%", "500px")}
+  const renderFail = () => {
+    const numericScore = typeof score === "number" ? score : 0;
+    return (
+      <div className="popup-card">
+        <div className="popup-badge badge-fail">
+          <span>😅</span>
+          <span>아쉬워요!</span>
         </div>
-      )}
-      <button
-        type="button"
-        onClick={onClose}
-        onMouseUp={blurAfterMouseClick}
-        style={{
-          ...btnMuted,
-          flex: "none",
-          width: "min(460px, 92%)",
-          backgroundColor: "#007AFF",
-          color: "#fff",
-        }}
-      >
-        확인
-      </button>
-    </div>
-  );
+        <h2 className="popup-title">조금 더 비슷하게!</h2>
+        <p className="popup-subtitle">
+          {errorMessage ??
+            `유사도 ${numericScore.toFixed(1)}% — 클리어 기준(85%)까지 조금 남았어요!`}
+        </p>
+
+        {/* Score comparison gauge bar */}
+        {!errorMessage && typeof score === "number" && (
+          <div className="score-gauge-wrap">
+            <div className="score-labels">
+              <span className="my-score-label">내 점수: {numericScore.toFixed(1)}%</span>
+              <span className="target-score-label">목표: 85.0%</span>
+            </div>
+            <div className="gauge-track">
+              <div
+                className="gauge-fill"
+                style={{ width: `${Math.min(100, Math.max(0, numericScore))}%` }}
+              />
+              <div className="gauge-target-line" />
+            </div>
+          </div>
+        )}
+
+        {renderPoseOverlay()}
+
+        <button
+          id="fail-retry-btn"
+          type="button"
+          className="neo-btn popup-btn btn-orange"
+          onClick={onClose}
+        >
+          한 번 더 도전하기! 🔁
+        </button>
+      </div>
+    );
+  };
 
   const renderTutorial = () => (
-    <div
-      style={{
-        ...modalBase,
-        backgroundColor: "#fff",
-        textAlign: "left",
-      }}
-    >
-      <h3 style={{ margin: "0 0 10px", fontSize: "22px" }}>튜토리얼</h3>
-      <p style={{ margin: "0 0 6px", fontSize: "14px", lineHeight: 1.5 }}>
-        1) 카메라 프레임에 상체와 손이 모두 보이게 서 주세요.
-      </p>
-      <p style={{ margin: "0 0 6px", fontSize: "14px", lineHeight: 1.5 }}>
-        2) 타이머(3초/5초)를 고른 뒤 촬영을 시작하세요.
-      </p>
-      <p style={{ margin: "0 0 14px", fontSize: "14px", lineHeight: 1.5 }}>
-        3) 촬영 후 유사도 평가 결과를 팝업에서 확인할 수 있습니다.
-      </p>
+    <div className="popup-card">
+      <div className="popup-badge badge-eval">
+        <span>💡</span>
+        <span>게임 룰 안내</span>
+      </div>
+      <h3 className="popup-title">포맨틀 어떻게 하나요?</h3>
+      <p className="popup-subtitle">3단계로 즐기는 오늘의 포즈 게임</p>
+
+      <div className="tutorial-grid">
+        <div className="tutorial-step">
+          <div className="step-num">1</div>
+          <div className="step-info">
+            <h4>화면에 상체 맞추기</h4>
+            <p>어깨, 팔꿈치와 양손이 카메라 안에 쏙 들어오게 서 주세요.</p>
+          </div>
+        </div>
+
+        <div className="tutorial-step">
+          <div className="step-num">2</div>
+          <div className="step-info">
+            <h4>타이머 누르고 자세 잡기</h4>
+            <p>3초 또는 5초를 선택하고 '포즈 촬영하기'를 누른 뒤 자세를 유지하세요.</p>
+          </div>
+        </div>
+
+        <div className="tutorial-step">
+          <div className="step-num">3</div>
+          <div className="step-info">
+            <h4>85% 넘으면 클리어!</h4>
+            <p>매일 자정에 새로운 포즈가 출제됩니다. 높은 점수로 랭킹에 도전해 보세요!</p>
+          </div>
+        </div>
+      </div>
+
       <button
+        id="tutorial-close-btn"
         type="button"
+        className="neo-btn popup-btn btn-purple"
         onClick={onClose}
-        onMouseUp={blurAfterMouseClick}
-        style={{
-          ...btnMuted,
-          flex: "none",
-          width: "100%",
-          backgroundColor: "#2F6BFF",
-          color: "#fff",
-        }}
       >
-        닫기
+        이해했어요! 👍
       </button>
     </div>
   );
 
   return (
-    <>
-      <div style={overlay}>
-        {mode === "tutorial" && renderTutorial()}
-        {mode === "evaluating" && renderEvaluating()}
-        {mode === "fail" && renderFail()}
-        {mode === "win" && renderWinBody()}
-      </div>
-    </>
+    <div className="popup-backdrop">
+      {mode === "tutorial" && renderTutorial()}
+      {mode === "evaluating" && renderEvaluating()}
+      {mode === "fail" && renderFail()}
+      {mode === "win" && renderWinBody()}
+    </div>
   );
 };
 

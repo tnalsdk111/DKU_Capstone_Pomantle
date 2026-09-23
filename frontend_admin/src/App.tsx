@@ -1,9 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import CalenderPage from './pages/calendarPage/CalendarPage';
 import { CreateDataPopUp } from './components/popup/createDataPopUp/CreateDataPopUp';
 import DataPage from './pages/dataPage/DataPage';
-import CustomButton from './components/button/CustomButton';
 import { PopUpManager } from './managers/PopUpManager';
 import { DBManager } from './managers/DBManager';
 import { CalendarDataPopUp } from './components/popup/calendatDataPopUp/CalendarDataPopUp';
@@ -13,7 +12,6 @@ function App() {
   const [currentPage, setCurrentPage] = useState<'calendar' | 'data'>('calendar');
   const [isLoading, setIsLoading] = useState(true);
   const dbManager = DBManager.getInstance();
-  const popUpManager = PopUpManager.getInstance();
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -30,30 +28,59 @@ function App() {
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: 'center', marginTop: '100px', fontSize: '20px' }}>
-        서버로부터 데이터를 동기화하는 중입니다...
+      <div className="admin-app">
+        <div className="admin-loading-card">
+          <div className="admin-loading-emoji">⚡</div>
+          <p className="admin-loading-text">서버로부터 포즈 데이터를 동기화하고 있어요…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 style={{ textAlign: 'center', marginTop: '40px' }}>Pomentle Admin Page</h1>
+    <div className="admin-app">
+      {/* Header Section */}
+      <header className="admin-header">
+        <div className="admin-badge">
+          <span>🛠️</span>
+          <span>ADMIN CONSOLE</span>
+        </div>
+        <h1 className="admin-title">POMANTLE ADMIN</h1>
+        <p className="admin-subtitle">데일리 포즈 문제 출제 및 데이터베이스 관리 허브</p>
+      </header>
       
-      <div>
-        <CustomButton label='전체 데이터 확인' variant='primary' size='large' onClick={()=>setCurrentPage('data')}/>
-        <CustomButton label='달력을 이용한 데이터 배정' variant='danger' size='large' onClick={()=>setCurrentPage('calendar')}/>
-      </div>
+      {/* Tab Navigation */}
+      <nav className="nav-tab-group">
+        <button
+          type="button"
+          className={`nav-tab-btn ${currentPage === 'calendar' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('calendar')}
+          id="tab-calendar"
+        >
+          <span>📅</span>
+          <span>달력 데이터 배정</span>
+        </button>
 
-      <div>
-        {currentPage == 'calendar' ? <CalenderPage /> : <DataPage/>}
-      </div>
+        <button
+          type="button"
+          className={`nav-tab-btn ${currentPage === 'data' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('data')}
+          id="tab-data"
+        >
+          <span>📦</span>
+          <span>전체 포즈 데이터 ({dbManager.getAllData().length})</span>
+        </button>
+      </nav>
 
-      <div>
-        <CalendarDataPopUp/>
-        <CreateDataPopUp/>
-        <SelectDataPopUp/>
-      </div>
+      {/* Main Page Area */}
+      <main className="admin-content-area">
+        {currentPage === 'calendar' ? <CalenderPage /> : <DataPage />}
+      </main>
+
+      {/* Popups */}
+      <CalendarDataPopUp />
+      <CreateDataPopUp />
+      <SelectDataPopUp />
     </div>
   );
 }

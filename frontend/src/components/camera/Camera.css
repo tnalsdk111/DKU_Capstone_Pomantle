@@ -1,0 +1,125 @@
+.camera-viewport {
+  position: relative;
+  height: 100%;
+  max-height: calc(100vh - 165px);
+  max-height: calc(100dvh - 165px);
+  aspect-ratio: 4 / 3;
+  width: auto;
+  max-width: min(94vw, 980px);
+  background-color: #000;
+  border: 3.5px solid var(--ink-black);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  display: block;
+}
+
+.webcam-stream,
+.holistic-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Playful REC Badge */
+.live-badge {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--pop-orange);
+  color: #fff;
+  border: 2px solid var(--ink-black);
+  box-shadow: 2px 2px 0px var(--ink-black);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #fff;
+  animation: bounceSoft 1s infinite;
+}
+
+/* Timer Selector Segment */
+.timer-selector {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 20;
+  display: flex;
+  gap: 6px;
+  background: #fff;
+  border: 2px solid var(--ink-black);
+  box-shadow: 3px 3px 0px var(--ink-black);
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.timer-btn {
+  background: transparent;
+  color: var(--ink-gray);
+  border: none;
+  border-radius: 9px;
+  padding: 6px 14px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.timer-btn.active {
+  background: var(--pop-yellow);
+  color: var(--ink-black);
+  border: 1.5px solid var(--ink-black);
+  box-shadow: 1px 1px 0px var(--ink-black);
+}
+
+/* Big Bouncy Countdown Display */
+.countdown-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(110px, 20vw, 170px);
+  font-weight: 900;
+  color: var(--pop-yellow);
+  -webkit-text-stroke: 4px var(--ink-black);
+  text-shadow: 8px 8px 0px var(--ink-black);
+  z-index: 30;
+  animation: countdownBounce 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: none;
+}
+
+@keyframes countdownBounce {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+}
+
