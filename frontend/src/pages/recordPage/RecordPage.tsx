@@ -4,14 +4,24 @@ import {
   getTopEvaluateRecordsForDaily,
   type StoredEvaluateRecord,
 } from "../../utils/gameLocalStorage";
-
-const CONTENT_WIDTH = "clamp(640px, 72vw, 980px)";
-const DEV_SIMILARITY_DESCRIPTION = "유사도 설명입니다";
+import "./RecordPage.css";
 
 type RecordPageProps = {
   dailyId: number;
   onBack: () => void;
 };
+
+function formatTimestamp(isoString: string) {
+  try {
+    const d = new Date(isoString);
+    return `${d.getHours().toString().padStart(2, "0")}:${d
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+  } catch {
+    return "";
+  }
+}
 
 function RecordRow({
   record,
@@ -20,83 +30,69 @@ function RecordRow({
   record: StoredEvaluateRecord;
   rank: number;
 }) {
+  const getMedal = (r: number) => {
+    switch (r) {
+      case 1:
+        return "👑";
+      case 2:
+        return "🥈";
+      case 3:
+        return "🥉";
+      default:
+        return `#${r}`;
+    }
+  };
+
+  const isTopThree = rank <= 3;
+
   return (
-    <li
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "20px",
-        listStyle: "none",
-        padding: "12px 0",
-        borderBottom: "1px solid #E0E0E0",
-      }}
-    >
-      <div
-        style={{
-          flex: "0 0 42%",
-          maxWidth: "320px",
-          aspectRatio: "4 / 3",
-          borderRadius: "12px",
-          overflow: "hidden",
-          backgroundColor: "#DDD",
-        }}
-      >
+    <li className={`record-card rank-${rank}`}>
+      {/* Rank Medal */}
+      <div className="rank-badge">
+        {isTopThree ? (
+          <span className="rank-medal">{getMedal(rank)}</span>
+        ) : (
+          <span className="rank-text">#{rank}</span>
+        )}
+      </div>
+
+      {/* Snapshot Thumbnail */}
+      <div className="record-thumbnail-wrap">
         {record.imgSrc ? (
           <PoseOverlayImage
             imgSrc={record.imgSrc}
             overlayData={record.overlay ?? null}
             width="100%"
-            alt={`유사도 ${rank}위 촬영 사진`}
+            alt={`Rank ${rank} snapshot`}
             borderRadius="0"
           />
         ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#888",
-              fontSize: "14px",
-            }}
-          >
-            이미지 없음
-          </div>
+          <span className="no-thumbnail">사진 없음</span>
         )}
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: "8px",
-          minWidth: 0,
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            fontSize: "36px",
-            fontWeight: 800,
-            color: "#222",
-            lineHeight: 1.1,
-          }}
-        >
-          {record.score.toFixed(1)}%
-        </p>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "16px",
-            color: "#555",
-            lineHeight: 1.4,
-          }}
-        >
-          {DEV_SIMILARITY_DESCRIPTION}
-        </p>
+      {/* Score and Stats */}
+      <div className="record-content">
+        <div className="score-row">
+          <span className="score-num">{record.score.toFixed(1)}%</span>
+          <span
+            className={`pass-tag ${record.is_passed ? "cleared" : "unreached"}`}
+          >
+            {record.is_passed ? "클리어 성공! 🎉" : "미달"}
+          </span>
+        </div>
+
+        {/* Mini progress gauge */}
+        <div className="mini-gauge">
+          <div
+            className="mini-gauge-fill"
+            style={{ width: `${Math.min(100, Math.max(0, record.score))}%` }}
+          />
+        </div>
+
+        <div className="record-meta">
+          {record.attemptNumber}번째 시도 • 기록 시각: {formatTimestamp(record.recordedAt)}
+        </div>
       </div>
     </li>
   );
@@ -105,111 +101,44 @@ function RecordRow({
 const RecordPage = ({ dailyId, onBack }: RecordPageProps) => {
   const topRecords = getTopEvaluateRecordsForDaily(dailyId, 5);
 
-  const blurAfterMouseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
-  };
-
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#F0F0F0",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: "28px",
-        paddingBottom: "40px",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          width: CONTENT_WIDTH,
-          maxWidth: "100%",
-          boxSizing: "border-box",
-          padding: "0 16px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "20px",
-            gap: "12px",
-          }}
-        >
+    <div className="records-screen">
+      <div className="records-container">
+        {/* Header */}
+        <div className="records-header">
           <button
+            id="back-to-game-btn"
             type="button"
+            className="neo-btn back-btn"
             onClick={onBack}
-            onMouseUp={blurAfterMouseClick}
             aria-label="게임 화면으로 돌아가기"
-            style={{
-              flexShrink: 0,
-              width: "44px",
-              height: "44px",
-              borderRadius: "50%",
-              border: "1px solid #CCC",
-              backgroundColor: "#FFF",
-              color: "#222",
-              fontSize: "22px",
-              lineHeight: 1,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 0,
-            }}
           >
-            ←
+            <span>← 뒤로가기</span>
           </button>
-          <h1
-            style={{
-              flex: 1,
-              margin: 0,
-              textAlign: "center",
-              fontSize: "clamp(28px, 3vw, 40px)",
-              fontWeight: 800,
-              color: "#222",
-            }}
-          >
-            기록 조회 화면
-          </h1>
-          <div style={{ width: "44px", flexShrink: 0 }} aria-hidden />
+
+          <div className="records-title-group">
+            <h1 className="records-title">
+              <span>🏆</span>
+              <span>명예의 전당</span>
+            </h1>
+            <p className="records-subtitle">오늘의 문제 #{dailyId} 최고 기록 Top 5</p>
+          </div>
+
+          <div style={{ width: "95px" }} aria-hidden />
         </div>
 
-        <div
-          style={{
-            backgroundColor: "#FFF",
-            borderRadius: "20px",
-            padding: "20px 24px",
-            boxSizing: "border-box",
-            minHeight: "480px",
-          }}
-        >
+        {/* Leaderboard Board */}
+        <div className="leaderboard-board">
           {topRecords.length === 0 ? (
-            <div
-              style={{
-                minHeight: "440px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <p
-                style={{
-                  margin: 0,
-                  textAlign: "center",
-                  color: "#666",
-                  fontSize: "18px",
-                  fontWeight: 600,
-                }}
-              >
-                기록이 없습니다
+            <div className="records-empty">
+              <span className="empty-icon">📸</span>
+              <h3 className="empty-title">아직 기록이 없어요!</h3>
+              <p className="empty-desc">
+                오늘 시도한 포즈 사진이 없습니다. 지금 바로 첫 번째 포즈를 찍어보세요!
               </p>
             </div>
           ) : (
-            <ul style={{ margin: 0, padding: 0 }}>
+            <ul className="records-list">
               {topRecords.map((record, index) => (
                 <RecordRow
                   key={`${record.recordedAt}-${index}`}

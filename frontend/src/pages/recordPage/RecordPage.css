@@ -1,0 +1,237 @@
+.records-screen {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px 60px;
+  box-sizing: border-box;
+}
+
+.records-container {
+  width: clamp(640px, 72vw, 980px);
+  max-width: 100%;
+}
+
+/* Header */
+.records-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  background: var(--bg-card);
+  color: var(--ink-black);
+  font-size: 14px;
+}
+
+.records-title-group {
+  text-align: center;
+}
+
+.records-title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 900;
+  color: var(--ink-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.records-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: var(--ink-gray);
+  font-weight: 700;
+}
+
+/* Leaderboard Board */
+.leaderboard-board {
+  background: var(--bg-card);
+  border: 3.5px solid var(--ink-black);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 10px 10px 0px var(--ink-black);
+  min-height: 440px;
+}
+
+.records-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Individual Record Row */
+.record-card {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 16px 20px;
+  background: var(--bg-subtle);
+  border: var(--border-width) solid var(--ink-black);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.record-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-md);
+}
+
+.record-card.rank-1 {
+  background: #fffdf0;
+  border-color: var(--ink-black);
+  box-shadow: var(--shadow-md);
+}
+
+/* Rank Badge */
+.rank-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+.rank-medal {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.rank-text {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ink-gray);
+}
+
+/* Thumbnail Polaroid Style */
+.record-thumbnail-wrap {
+  width: 140px;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid var(--ink-black);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-thumbnail {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Content & Score */
+.record-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.score-num {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ink-black);
+  letter-spacing: -0.02em;
+}
+
+.rank-1 .score-num {
+  color: var(--pop-orange);
+}
+
+.pass-tag {
+  font-size: 12px;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 2px solid var(--ink-black);
+  letter-spacing: 0.02em;
+}
+
+.pass-tag.cleared {
+  background: var(--pop-green);
+  color: #fff;
+}
+
+.pass-tag.unreached {
+  background: var(--bg-subtle);
+  color: var(--ink-gray);
+}
+
+/* Mini Bar */
+.mini-gauge {
+  width: 100%;
+  height: 10px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--ink-black);
+  overflow: hidden;
+}
+
+.mini-gauge-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--pop-yellow);
+  border-right: 2px solid var(--ink-black);
+}
+
+.rank-1 .mini-gauge-fill {
+  background: var(--pop-orange);
+}
+
+.record-meta {
+  font-size: 13px;
+  color: var(--ink-gray);
+  font-weight: 600;
+}
+
+/* Empty State */
+.records-empty {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.empty-icon {
+  font-size: 56px;
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink-black);
+}
+
+.empty-desc {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-gray);
+  font-weight: 600;
+}
