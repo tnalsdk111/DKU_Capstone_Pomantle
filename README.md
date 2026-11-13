@@ -25,3 +25,7 @@
 ## 🛠️ Tech Stack & Core Logic (핵심 기술)
 - **Pose Estimation:** MediaPipe / AI 관절 인식 모델을 통한 고정밀 스켈레톤 좌표 추출
 - **Similarity Engine:** 신체 부위별 가중치 기반 벡터 각도 연산을 통한 유사도 판정 엔진 구축
+
+
+## 시연 영상
+- https://www.youtube.com/watch?v=n50RGLA9aQw&feature=youtu.be
