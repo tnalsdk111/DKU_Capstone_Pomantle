@@ -1,0 +1,228 @@
+/* Modal Backdrop */
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(24, 24, 27, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Card Base */
+.popup-card {
+  width: clamp(520px, 60vw, 680px);
+  max-width: 95vw;
+  background: #ffffff;
+  border: 3.5px solid var(--ink-black);
+  border-radius: 28px;
+  padding: 36px 32px;
+  box-shadow: 10px 10px 0px var(--ink-black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.popup-card.win-card {
+  background: #fffdf0;
+}
+
+/* Header Sticker Badge */
+.popup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 9999px;
+  border: var(--border-width) solid var(--ink-black);
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+
+.badge-win {
+  background: var(--pop-yellow);
+  color: var(--ink-black);
+  transform: rotate(-1.5deg);
+}
+
+.badge-fail {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-eval {
+  background: #e0e7ff;
+  color: var(--pop-purple);
+}
+
+.popup-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink-black);
+  margin: 0 0 8px 0;
+}
+
+.popup-subtitle {
+  font-size: 16px;
+  color: var(--ink-gray);
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+/* Preview Image Box */
+.preview-container {
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  overflow: hidden;
+  border: var(--border-width) solid var(--ink-black);
+  background: #000;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+  position: relative;
+}
+
+/* Score Comparison Bar (Fail State) */
+.score-gauge-wrap {
+  width: 100%;
+  max-width: 440px;
+  margin-bottom: 24px;
+}
+
+.score-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.my-score-label {
+  color: var(--pop-orange);
+}
+
+.target-score-label {
+  color: var(--pop-green);
+}
+
+.gauge-track {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--bg-subtle);
+  border: var(--border-width) solid var(--ink-black);
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--pop-orange);
+  border-right: 2px solid var(--ink-black);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gauge-target-line {
+  position: absolute;
+  top: 0;
+  left: 85%;
+  width: 3px;
+  height: 100%;
+  background: var(--ink-black);
+}
+
+/* Buttons */
+.popup-btn {
+  width: 100%;
+  max-width: 440px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.btn-yellow {
+  background: var(--pop-yellow);
+  color: var(--ink-black);
+}
+
+.btn-orange {
+  background: var(--pop-orange);
+  color: #fff;
+}
+
+.btn-purple {
+  background: var(--pop-purple);
+  color: #fff;
+}
+
+/* Tutorial Steps */
+.tutorial-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.tutorial-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-subtle);
+  border: var(--border-width) solid var(--ink-black);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--pop-yellow);
+  border: 2px solid var(--ink-black);
+  color: var(--ink-black);
+  font-size: 15px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-info h4 {
+  margin: 0 0 3px 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink-black);
+}
+
+.step-info p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-gray);
+  line-height: 1.4;
+}

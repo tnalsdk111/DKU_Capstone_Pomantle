@@ -88,7 +88,7 @@ export const CalendarDataPopUp = () => {
                             <CustomButton label="데이터 취소" variant="primary" size="large" onClick={CancelData}/>
                         </div>) 
                         : 
-                        (<p>지정된 데이터가 없습니다.</p>)
+                        (<p className="empty-msg">지정된 포즈 데이터가 없습니다.<br />아래 버튼으로 새 데이터를 등록하거나 기존 데이터를 배정해 주세요.</p>)
                     }
                 </div>
                 
